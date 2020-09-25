@@ -4,7 +4,11 @@ project(lab1 VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-add_executable(lab1 src/main.cpp src/tritset.cpp)
+include_directories(src)
+
+add_subdirectory(src)
+add_subdirectory(tests)
+add_subdirectory(lib/googletest)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

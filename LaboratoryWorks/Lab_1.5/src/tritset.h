@@ -25,5 +25,5 @@ class TritSet{
         std::size_t capacity();
         //constexpr Trit operator [](std::size_t index) const;
         reference operator [](std::size_t index);
-        void shrink();
+        //void shrink();
 };

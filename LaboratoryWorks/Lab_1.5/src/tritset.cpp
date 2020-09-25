@@ -90,11 +90,11 @@ TritSet::reference TritSet :: operator [](size_t index){
     return ref;
 }
 
-void TritSet :: shrink(){
-    int new_size = min_size;
-    for(int i = min_size - 1; i < actual_size; i++){
-        if(this[i] != Trit::Unknown){
-            new_size = i + 1;
-        }
-    }
-}
+// void TritSet :: shrink(){
+//     int new_size = min_size;
+//     for(int i = min_size - 1; i < actual_size; i++){
+//         if(this[i] != Trit::Unknown){
+//             new_size = i + 1;
+//         }
+//     }
+// }

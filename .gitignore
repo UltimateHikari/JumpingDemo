@@ -16,4 +16,5 @@ settings.json
 bazel-*
 Debug/
 Release/
+LaboratoryWorks/*/lib/*
 LaboratoryWorks/*/build/*

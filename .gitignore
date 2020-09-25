@@ -4,6 +4,7 @@
 *.pdb
 *.idb
 .vs/
+.vscode/
 *.suo
 *.ilk
 *.exe
@@ -15,3 +16,4 @@ settings.json
 bazel-*
 Debug/
 Release/
+LaboratoryWorks/*/build/*

@@ -17,9 +17,9 @@ bool TritSet :: widen_to_fit(std::size_t index){
     for(int i = 0; i < ind_to_chunk(this->actual_size); i++){
         expanded_array[i] = this->array[i];
     }
-    delete this->array;
-    this->array = expanded_array;
-    this->actual_size = ind_to_chunk(index)*sizeof(size_t)/2;
+    delete array;
+    array = expanded_array;
+    actual_size = ind_to_chunk(index)*sizeof(size_t)/2;
     return true;
 }
 
@@ -30,6 +30,7 @@ TritSet::reference :: reference (int in_ind, TritSet& in_parent): parent(in_pare
 size_t trit_bitify(Trit t){
     return static_cast<size_t>(t);
 }
+
 int get_inner_ind(size_t index){
     // ind of first of two bits but going from backwards
     return 2*index % (8*sizeof(size_t));
@@ -90,11 +91,20 @@ TritSet::reference TritSet :: operator [](size_t index){
     return ref;
 }
 
-// void TritSet :: shrink(){
-//     int new_size = min_size;
-//     for(int i = min_size - 1; i < actual_size; i++){
-//         if(this[i] != Trit::Unknown){
-//             new_size = i + 1;
-//         }
-//     }
-// }
+bool TritSet :: shrink(){
+    int new_size = min_size;
+    for(int i = min_size - 1; i < actual_size; i++){
+        if((*this)[i] != static_cast<int>(Trit::Unknown)){ 
+            //should be std::underlying_type, but excessive here
+            new_size = i + 1;
+        }
+    }
+    size_t * shrinkd_array = new size_t[ind_to_chunk(new_size)];
+    for(int i = 0; i < new_size; i++){
+        shrinkd_array[i] = array[i];
+    }
+    delete array;
+    array = shrinkd_array;
+    actual_size = new_size;
+    return true;
+}

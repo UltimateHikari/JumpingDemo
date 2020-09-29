@@ -68,7 +68,10 @@ TritSet::reference :: operator Trit(){
 }
 
 TritSet :: TritSet(size_t size){
-    array = new size_t[size];
+    array = new size_t[ind_to_chunk(size)];
+    for(int i = 0; i < ind_to_chunk(size); i++){
+        array[i] = 0;
+    }
     min_size = size;
     actual_size = size;
 }
@@ -78,7 +81,7 @@ TritSet :: ~TritSet(){
 }
 
 size_t TritSet :: capacity(){
-    return actual_size;
+    return ind_to_chunk(actual_size); // not all bits of it are used
 }
 
 // constexpr Trit TritSet :: operator [](size_t index) const{

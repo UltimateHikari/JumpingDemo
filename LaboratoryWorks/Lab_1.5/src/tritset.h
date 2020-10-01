@@ -22,7 +22,7 @@ class TritSet{
         };
         TritSet(std::size_t size); // want some realloc and copy at some moment
         ~TritSet();
-        std::size_t capacity();
+        std::size_t capacity(); //size_t array size
         //constexpr Trit operator [](std::size_t index) const;
         reference operator [](std::size_t index);
         bool shrink();

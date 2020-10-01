@@ -19,7 +19,7 @@ bool TritSet :: widen_to_fit(std::size_t index){
     }
     delete array;
     array = expanded_array;
-    actual_size = ind_to_chunk(index)*sizeof(size_t)/2;
+    actual_size = index;
     return true;
 }
 
@@ -46,7 +46,7 @@ TritSet :: reference& TritSet::reference :: operator = (Trit t){
         // ********
         // **..**** // inner = 4;
         size_t lesser_trits = (in_chunk << outer_index) >> outer_index; // dumb i agree
-        size_t larger_trits = in_chunk >> get_inner_ind(index);
+        size_t larger_trits = (in_chunk >> (get_inner_ind(index) + 2)) << (get_inner_ind(index) + 2);
         size_t a = get_inner_ind(index);
         size_t current_trit = (3 & trit_bitify(t)) << get_inner_ind(index);
         in_chunk = lesser_trits | current_trit | larger_trits;
@@ -97,7 +97,7 @@ TritSet::reference TritSet :: operator [](size_t index){
 bool TritSet :: shrink(){
     int new_size = min_size;
     for(int i = min_size - 1; i < actual_size; i++){
-        if((*this)[i] != static_cast<int>(Trit::Unknown)){ 
+        if(array[i] != static_cast<int>(Trit::Unknown)){ 
             //should be std::underlying_type, but excessive here
             new_size = i + 1;
         }

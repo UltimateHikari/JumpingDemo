@@ -42,24 +42,25 @@ TEST(tritset, setnget){
         EXPECT_EQ(static_cast<Trit>(set[i]), Trit::False);
         set[i] = Trit::True;
         EXPECT_EQ(static_cast<Trit>(set[i]), Trit::True);
-
+        set[i] = Trit::Unknown;
+        EXPECT_EQ(static_cast<Trit>(set[i]), Trit::Unknown);
     }
 }
 
 TEST(shrink, to_last){
-    TritSet set(100);
-    set[1000] = Trit::False;
+    TritSet set(10);
+    set[100] = Trit::False;
     int allocated = set.capacity();
-    set[1000] = Trit::Unknown;
-    set[500] = Trit::False;
+    set[100] = Trit::Unknown;
+    set[50] = Trit::False;
     set.shrink();
     EXPECT_GT(allocated, set.capacity());
 }
 
 TEST(shrink, to_min){
-    TritSet set(100);
-    set[500] = Trit::False;
-    set[500] = Trit::Unknown;
+    TritSet set(10);
+    set[20] = Trit::False;
+    set[20] = Trit::Unknown;
     int allocated = set.capacity();
     set.shrink();
     EXPECT_GT(allocated, set.capacity());

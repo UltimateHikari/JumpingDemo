@@ -18,3 +18,4 @@ Debug/
 Release/
 LaboratoryWorks/*/lib/*
 LaboratoryWorks/*/build/*
+\!LaboratoryWorks/*/lib/googletest/CMakeLists.txt

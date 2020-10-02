@@ -5,8 +5,8 @@
 TEST(tritset, constructor){
     TritSet set(100);
     int allocated = set.capacity();
-    EXPECT_GE(allocated, 100*2 / 8 / sizeof(std::size_t));
-    EXPECT_LE(allocated, 100*2 / 8);
+    EXPECT_GE( 8*sizeof(size_t)*allocated, 100*2);
+    EXPECT_LE(8*allocated, 100*2);
 }
 
 TEST(tritset, initialization){

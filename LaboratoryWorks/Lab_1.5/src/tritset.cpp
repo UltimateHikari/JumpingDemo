@@ -24,6 +24,7 @@ size_t form_filler_mask(int index, Trit t){
 }
 
 void TritSet :: resize(std::size_t index){
+    if(ind_to_chunk(index) == underlaying_capacity()) return;
     size_t * expanded_array = new size_t[ind_to_chunk(index)];
     for(int i = 0; i < ind_to_chunk(index); i++){
         expanded_array[i] = 0;
@@ -75,15 +76,22 @@ TritSet :: TritSet(size_t size){
     actual_size = size;
 }
 
+TritSet :: TritSet(const TritSet& set){
+    TritSet(set.capacity());
+    for(int i = 0; i < capacity(); i++){
+        (*this)[i] = set[i];
+    }
+}
+
 TritSet :: ~TritSet(){
     delete[] array;
 }
 
-size_t TritSet :: underlaying_capacity(){
+size_t TritSet :: underlaying_capacity() const{
     return ind_to_chunk(actual_size); // not all bits of it are used
 }
 
-size_t TritSet :: capacity(){
+size_t TritSet :: capacity() const{
     return actual_size; // more logical as for container
 }
 
@@ -95,9 +103,9 @@ Trit TritSet :: operator [](size_t index) const{
     return TritSet::reference(index, *(const_cast<TritSet*>(this)));
 }
 
-std::size_t TritSet :: last_significant_index() const{
-    int new_size = min_size;
-    for(int i = min_size - 1; i < actual_size; i++){
+std::size_t TritSet :: length() const{ //rework
+    int new_size = 0;
+    for(int i = 0; i < actual_size; i++){
         if((*this)[i] != Trit::Unknown){ 
             new_size = i + 1;
         }
@@ -106,12 +114,12 @@ std::size_t TritSet :: last_significant_index() const{
 }
 
 void TritSet :: shrink(){
-    resize(last_significant_index());
+    resize(max(length(), min_size));
 }
 
 TritSet& TritSet :: operator &=(const TritSet& A){
-    if(A.last_significant_index() > last_significant_index()){
-        resize(A.last_significant_index());
+    if(A.length() > capacity()){
+        resize(A.length());
     }
     for(int i = 0; i < capacity(); i++){
         if((*this)[i] == Trit::False || A[i] == Trit::False){
@@ -125,8 +133,8 @@ TritSet& TritSet :: operator &=(const TritSet& A){
 }
 
 TritSet& TritSet :: operator |=(const TritSet& A){
-    if(A.last_significant_index() > last_significant_index()){
-        resize(A.last_significant_index());
+    if(A.length() > capacity()){
+        resize(A.length());
     }
     for(int i = 0; i < capacity(); i++){
         if((*this)[i] == Trit::False && A[i] == Trit::False){
@@ -149,4 +157,12 @@ TritSet& TritSet :: operator ~(){
         }
     }
     return *this;
+}
+
+TritSet operator & (const TritSet& A, const TritSet& B){
+    return TritSet(A) &= B;
+}
+
+TritSet operator | (const TritSet& A, const TritSet& B){
+    return TritSet(A) |= B;
 }

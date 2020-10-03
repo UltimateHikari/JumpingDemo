@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 
 enum class Trit : int{Unknown = 0, False = 1, True = 2};
 
@@ -19,15 +20,24 @@ class TritSet{
                 operator int(); //for cout
                 operator Trit();
         };
-        TritSet(std::size_t size); // want some realloc and copy at some moment
+        TritSet(std::size_t size);
+        TritSet(const TritSet& set);
         ~TritSet();
-        std::size_t underlaying_capacity(); // size of underlaying array, incapsulation leak actually
-        std::size_t capacity();
-        std::size_t last_significant_index() const;
+        std::size_t underlaying_capacity() const; // size of underlaying array, incapsulation leak actually
+        std::size_t capacity() const;
+        std::size_t length() const; //ind of first !U + 1
+        
         reference operator [](std::size_t index);
         Trit operator [](std::size_t index) const;
+        void shrink();
+
         TritSet& operator &=(const TritSet& A);
         TritSet& operator |=(const TritSet& A);
         TritSet& operator ~();
-        void shrink();
+        friend TritSet operator & (const TritSet& A, const TritSet& B);
+        friend TritSet operator | (const TritSet& A, const TritSet& B);
+
+        size_t cardinality(Trit value);
+        std::unordered_map< Trit, int, std::hash<int> > cardinality();
+        void trim(size_t lastIndex);
 };

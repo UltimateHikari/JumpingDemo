@@ -14,7 +14,7 @@ class TritSet{
                 int index;
                 TritSet& parent;
             public:
-                reference(int in_ind, TritSet & in_parent);
+                reference(int in_ind, TritSet& in_parent);
                 reference& operator = (Trit t);
                 operator int(); //for cout
                 operator Trit();
@@ -23,6 +23,11 @@ class TritSet{
         ~TritSet();
         std::size_t underlaying_capacity(); // size of underlaying array, incapsulation leak actually
         std::size_t capacity();
+        std::size_t last_significant_index() const;
         reference operator [](std::size_t index);
+        Trit operator [](std::size_t index) const;
+        TritSet& operator &=(const TritSet& A);
+        TritSet& operator |=(const TritSet& A);
+        TritSet& operator ~();
         void shrink();
 };

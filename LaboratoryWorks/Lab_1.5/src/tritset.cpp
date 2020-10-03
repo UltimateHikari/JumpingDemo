@@ -91,12 +91,62 @@ TritSet::reference TritSet :: operator [](size_t index){
     return TritSet::reference(index, *this);
 }
 
-void TritSet :: shrink(){
+Trit TritSet :: operator [](size_t index) const{
+    return TritSet::reference(index, *(const_cast<TritSet*>(this)));
+}
+
+std::size_t TritSet :: last_significant_index() const{
     int new_size = min_size;
     for(int i = min_size - 1; i < actual_size; i++){
         if((*this)[i] != Trit::Unknown){ 
             new_size = i + 1;
         }
     }
-    resize(new_size);
+    return new_size;
+}
+
+void TritSet :: shrink(){
+    resize(last_significant_index());
+}
+
+TritSet& TritSet :: operator &=(const TritSet& A){
+    if(A.last_significant_index() > last_significant_index()){
+        resize(A.last_significant_index());
+    }
+    for(int i = 0; i < capacity(); i++){
+        if((*this)[i] == Trit::False || A[i] == Trit::False){
+            (*this)[i] = Trit::False;
+        }
+        if((*this)[i] == Trit::True && A[i] == Trit::True){
+            (*this)[i] = Trit::True;
+        }
+    }
+    return *this;
+}
+
+TritSet& TritSet :: operator |=(const TritSet& A){
+    if(A.last_significant_index() > last_significant_index()){
+        resize(A.last_significant_index());
+    }
+    for(int i = 0; i < capacity(); i++){
+        if((*this)[i] == Trit::False && A[i] == Trit::False){
+            (*this)[i] = Trit::False;
+        }
+        if((*this)[i] == Trit::True || A[i] == Trit::True){
+            (*this)[i] = Trit::True;
+        }
+    }
+    return *this;
+}
+
+TritSet& TritSet :: operator ~(){
+    for(int i = 0; i < capacity(); i++){
+        if((*this)[i] == Trit::False){
+            (*this)[i] = Trit::True;
+        }
+        if((*this)[i] == Trit::True){
+            (*this)[i] = Trit::False;
+        }
+    }
+    return *this;
 }

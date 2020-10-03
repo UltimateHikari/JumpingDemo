@@ -6,7 +6,7 @@ enum class Trit : int{Unknown = 0, False = 1, True = 2};
 class TritSet{
     private:
         std::size_t min_size, actual_size;
-        std::size_t * array;
+        std::size_t * array; //chunk == size_t containing a number of trits
         void resize(std::size_t index);
     public:
         class reference{

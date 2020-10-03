@@ -36,7 +36,7 @@ TEST(tritset, allocations){
 
 TEST(tritset, setnget){
     TritSet set(100);
-    for(int i = 0; i < sizeof(std::size_t); i++){
+    for(int i = 0; i <= sizeof(std::size_t); i++){
         EXPECT_EQ(static_cast<Trit>(set[i]), Trit::Unknown);
         set[i] = Trit::False;
         EXPECT_EQ(static_cast<Trit>(set[i]), Trit::False);
@@ -58,9 +58,9 @@ TEST(shrink, to_last){
 }
 
 TEST(shrink, to_min){
-    TritSet set(10);
-    set[20] = Trit::False;
-    set[20] = Trit::Unknown;
+    TritSet set(32);
+    set[33] = Trit::False;
+    set[33] = Trit::Unknown;
     int allocated = set.underlaying_capacity();
     set.shrink();
     EXPECT_GT(allocated, set.underlaying_capacity());

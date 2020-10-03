@@ -25,8 +25,11 @@ size_t form_filler_mask(int index, Trit t){
 
 void TritSet :: resize(std::size_t index){
     size_t * expanded_array = new size_t[ind_to_chunk(index)];
-    int last_preserved = min(actual_size, ind_to_chunk(actual_size));
-    for(int i = 0; i < last_preserved; i++){
+    for(int i = 0; i < ind_to_chunk(index); i++){
+        expanded_array[i] = 0;
+    }
+    int last_preserved_chunk = min(ind_to_chunk(index), ind_to_chunk(actual_size));
+    for(int i = 0; i < last_preserved_chunk; i++){
         expanded_array[i] = array[i];
     }
     delete[] array;
@@ -39,7 +42,7 @@ TritSet::reference :: reference (int in_ind, TritSet& in_parent): parent(in_pare
 }
 
 TritSet :: reference& TritSet::reference :: operator = (Trit t){
-    if(index > parent.actual_size){
+    if(index > parent.actual_size && ind_to_chunk){
         if(t == Trit::Unknown) return *this;
         parent.resize(index);
     }
@@ -85,14 +88,13 @@ size_t TritSet :: capacity(){
 }
 
 TritSet::reference TritSet :: operator [](size_t index){
-    TritSet::reference ref(index, *this);
-    return ref;
+    return TritSet::reference(index, *this);
 }
 
 void TritSet :: shrink(){
     int new_size = min_size;
     for(int i = min_size - 1; i < actual_size; i++){
-        if(array[i] != static_cast<int>(Trit::Unknown)){ 
+        if((*this)[i] != Trit::Unknown){ 
             new_size = i + 1;
         }
     }

@@ -57,9 +57,6 @@ TritSet::reference :: operator int(){
 }
 
 TritSet::reference :: operator Trit(){
-    // int a = parent.array[ind_to_chunk(index)];
-    // int b = get_inner_ind(index);
-    // int c = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index));
     int res = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index))
             & static_cast<size_t>(3);
     return static_cast<Trit>(res);
@@ -79,8 +76,12 @@ TritSet :: ~TritSet(){
     delete[] array;
 }
 
-size_t TritSet :: capacity(){
+size_t TritSet :: underlaying_capacity(){
     return ind_to_chunk(actual_size); // not all bits of it are used
+}
+
+size_t TritSet :: capacity(){
+    return actual_size; // more logical as for container
 }
 
 TritSet::reference TritSet :: operator [](size_t index){

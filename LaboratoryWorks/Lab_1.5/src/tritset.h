@@ -7,7 +7,6 @@ class TritSet{
     private:
         std::size_t min_size, actual_size;
         std::size_t * array;
-        //std::size_t ind_to_chunk(std::size_t index);
         void resize(std::size_t index);
     public:
         class reference{
@@ -22,7 +21,8 @@ class TritSet{
         };
         TritSet(std::size_t size); // want some realloc and copy at some moment
         ~TritSet();
-        std::size_t capacity(); //size_t's in array
+        std::size_t underlaying_capacity(); // size of underlaying array, incapsulation leak actually
+        std::size_t capacity();
         reference operator [](std::size_t index);
         void shrink();
 };

@@ -4,7 +4,7 @@
 
 TEST(tritset, constructor){
     TritSet set(100);
-    int allocated = set.capacity();
+    int allocated = set.underlaying_capacity();
     EXPECT_GE( 8*sizeof(size_t)*allocated, 100*2);
     EXPECT_LE(8*allocated, 100*2);
 }
@@ -18,20 +18,20 @@ TEST(tritset, initialization){
 
 TEST(tritset, allocations){
     TritSet set(100);
-    int allocated = set.capacity();
+    int allocated = set.underlaying_capacity();
     set[1000] = Trit::Unknown; 
-    EXPECT_EQ(allocated, set.capacity());
+    EXPECT_EQ(allocated, set.underlaying_capacity());
 
     if(set[2000] == Trit::True){} 
-    EXPECT_EQ(allocated, set.capacity());
+    EXPECT_EQ(allocated, set.underlaying_capacity());
 
     set[1000] = Trit::True; 
-    EXPECT_LT(allocated, set.capacity());
+    EXPECT_LT(allocated, set.underlaying_capacity());
 
-    allocated = set.capacity();
+    allocated = set.underlaying_capacity();
     set[10000] = Trit::Unknown; 
     set[100] = Trit::False; 
-    EXPECT_EQ(allocated, set.capacity());
+    EXPECT_EQ(allocated, set.underlaying_capacity());
 }
 
 TEST(tritset, setnget){
@@ -50,18 +50,18 @@ TEST(tritset, setnget){
 TEST(shrink, to_last){
     TritSet set(10);
     set[100] = Trit::False;
-    int allocated = set.capacity();
+    int allocated = set.underlaying_capacity();
     set[100] = Trit::Unknown;
     set[50] = Trit::False;
     set.shrink();
-    EXPECT_GT(allocated, set.capacity());
+    EXPECT_GT(allocated, set.underlaying_capacity());
 }
 
 TEST(shrink, to_min){
     TritSet set(10);
     set[20] = Trit::False;
     set[20] = Trit::Unknown;
-    int allocated = set.capacity();
+    int allocated = set.underlaying_capacity();
     set.shrink();
-    EXPECT_GT(allocated, set.capacity());
+    EXPECT_GT(allocated, set.underlaying_capacity());
 }

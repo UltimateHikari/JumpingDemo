@@ -16,7 +16,7 @@ int get_inner_ind(int index){
 }
 
 size_t form_zero_mask(int index){
-    return ~(3 << get_inner_ind(index));
+    return ~(static_cast<size_t>(3) << get_inner_ind(index));
 }
 
 size_t form_filler_mask(int index, Trit t){
@@ -29,8 +29,8 @@ void TritSet :: resize(std::size_t index){
     for(int i = 0; i < ind_to_chunk(index); i++){
         expanded_array[i] = 0;
     }
-    int last_preserved_chunk = min(ind_to_chunk(index), ind_to_chunk(actual_size));
-    for(int i = 0; i < last_preserved_chunk; i++){
+    int last_significant_chunk = min(ind_to_chunk(index), ind_to_chunk(actual_size));
+    for(int i = 0; i < last_significant_chunk; i++){
         expanded_array[i] = array[i];
     }
     delete[] array;
@@ -54,20 +54,19 @@ TritSet :: reference& TritSet::reference :: operator = (Trit t){
     // no out_of_range just unknown lol
 }
 
-TritSet::reference :: operator int(){
-    int res = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index))
+TritSet::reference :: operator int() const{
+    size_t res = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index))
             & static_cast<size_t>(3);
-    return res;
+    return static_cast<int>(res);
 }
 
-TritSet::reference :: operator Trit(){
-    int res = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index))
+TritSet::reference :: operator Trit() const{
+    size_t res = (parent.array[ind_to_chunk(index)] >> get_inner_ind(index))
             & static_cast<size_t>(3);
     return static_cast<Trit>(res);
 }
 
 TritSet :: TritSet(size_t size){
-    size_t a = ind_to_chunk(size);
     array = new size_t[ind_to_chunk(size)];
     for(int i = 0; i < ind_to_chunk(size); i++){
         array[i] = 0;
@@ -76,8 +75,8 @@ TritSet :: TritSet(size_t size){
     actual_size = size;
 }
 
-TritSet :: TritSet(const TritSet& set){
-    TritSet(set.capacity());
+TritSet :: TritSet(const TritSet& set): 
+    TritSet :: TritSet(set.capacity()){
     for(int i = 0; i < capacity(); i++){
         (*this)[i] = set[i];
     }
@@ -183,4 +182,11 @@ void TritSet::trim(size_t last_index){
     for(int i = last_index; i < length(); i++){
         (*this)[i] = Trit::Unknown;
     }
+}
+
+bool operator == (const TritSet::reference& a, const TritSet::reference& b){
+    return static_cast<Trit>(a) == b;
+}
+bool operator != (const TritSet::reference& a, const TritSet::reference& b){
+    return static_cast<Trit>(a) != b;
 }

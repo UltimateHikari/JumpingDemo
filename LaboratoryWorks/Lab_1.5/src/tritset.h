@@ -17,8 +17,8 @@ class TritSet{
             public:
                 reference(int in_ind, TritSet& in_parent);
                 reference& operator = (Trit t);
-                operator int(); //for cout
-                operator Trit();
+                operator int() const; //for cout
+                operator Trit() const;
         };
         TritSet(std::size_t size);
         TritSet(const TritSet& set);
@@ -26,6 +26,7 @@ class TritSet{
         std::size_t underlaying_capacity() const; // size of underlaying array, incapsulation leak actually
         std::size_t capacity() const;
         std::size_t length() const; //ind of first !U + 1
+        void trim(size_t lastIndex);
         
         reference operator [](std::size_t index);
         Trit operator [](std::size_t index) const;
@@ -37,8 +38,9 @@ class TritSet{
 
         int cardinality(Trit value);
         std::unordered_map< Trit, int > cardinality();
-        void trim(size_t lastIndex);
 };
 
 TritSet operator & (const TritSet& A, const TritSet& B);
 TritSet operator | (const TritSet& A, const TritSet& B);
+bool operator == (const TritSet::reference& a, const TritSet::reference& b);
+bool operator != (const TritSet::reference& a, const TritSet::reference& b);

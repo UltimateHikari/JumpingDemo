@@ -166,3 +166,21 @@ TritSet operator & (const TritSet& A, const TritSet& B){
 TritSet operator | (const TritSet& A, const TritSet& B){
     return TritSet(A) |= B;
 }
+
+unordered_map <Trit, int> TritSet :: cardinality(){
+    unordered_map <Trit, int> res;
+    for(int i = 0; i < length(); i++){
+        res[(*this)[i]]++;
+    }
+    return res;
+}
+
+int TritSet :: cardinality(Trit value){
+    return cardinality()[value];
+}
+
+void TritSet::trim(size_t last_index){
+    for(int i = last_index; i < length(); i++){
+        (*this)[i] = Trit::Unknown;
+    }
+}

@@ -34,10 +34,11 @@ class TritSet{
         TritSet& operator &=(const TritSet& A);
         TritSet& operator |=(const TritSet& A);
         TritSet& operator ~();
-        friend TritSet operator & (const TritSet& A, const TritSet& B);
-        friend TritSet operator | (const TritSet& A, const TritSet& B);
 
-        size_t cardinality(Trit value);
-        std::unordered_map< Trit, int, std::hash<int> > cardinality();
+        int cardinality(Trit value);
+        std::unordered_map< Trit, int > cardinality();
         void trim(size_t lastIndex);
 };
+
+TritSet operator & (const TritSet& A, const TritSet& B);
+TritSet operator | (const TritSet& A, const TritSet& B);

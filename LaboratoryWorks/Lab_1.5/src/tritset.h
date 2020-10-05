@@ -28,13 +28,13 @@ class TritSet{
         std::size_t length() const; //ind of first !U + 1
         void trim(size_t lastIndex);
         
+        TritSet& operator = (TritSet set);
         reference operator [](std::size_t index);
         Trit operator [](std::size_t index) const;
         void shrink();
 
         TritSet& operator &=(const TritSet& A);
         TritSet& operator |=(const TritSet& A);
-        TritSet& operator ~();
 
         int cardinality(Trit value);
         std::unordered_map< Trit, int > cardinality();
@@ -43,5 +43,6 @@ class TritSet{
 
 TritSet operator & (const TritSet& A, const TritSet& B);
 TritSet operator | (const TritSet& A, const TritSet& B);
+TritSet operator ~(const TritSet& A);
 bool operator == (const TritSet::reference& a, const TritSet::reference& b);
 bool operator != (const TritSet::reference& a, const TritSet::reference& b);

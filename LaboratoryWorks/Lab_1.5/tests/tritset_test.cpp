@@ -61,6 +61,8 @@ TEST(constructors, copy){
     EXPECT_EQ(A[99], B[99]);
 }
 
+//TEST(constructors, assign);
+
 TEST(resize, allocations){
     TritSet set(100);
     int allocated = set.underlaying_capacity();
@@ -85,12 +87,9 @@ TEST(resize, allocations){
 TEST(resize, to_last){
     TritSet set(10);
     set[100] = Trit::False;
-    std::cerr << set;
     int allocated = set.underlaying_capacity();
     set[100] = Trit::Unknown;
-        std::cerr << set;
     set[50] = Trit::False;
-        std::cerr << set;
     set.shrink();
     EXPECT_GT(allocated, set.underlaying_capacity()) << "and length is " << set.length();
 }
@@ -141,7 +140,50 @@ TEST(cardinality, True){
     EXPECT_EQ(set.cardinality(Trit::True), 11);
 }
 
+class BinaryTest : public ::testing::Test {
+    protected:
+    TritSet * A;
+    TritSet * B;
+    void SetUp() override {
+        A = new TritSet(10);
+        B = new TritSet(10);
+        (*A)[0] = Trit::False; (*A)[1] = Trit::False; (*A)[2] = Trit::False;
+        (*A)[6] = Trit::True; (*A)[7] = Trit::True; (*A)[8] = Trit::True;
+        (*B)[0] = Trit::False; (*B)[3] = Trit::False; (*B)[6] = Trit::False;
+        (*B)[2] = Trit::True; (*B)[5] = Trit::True; (*B)[8] = Trit::True;
+    }
+    void TearDown() override {
+        delete A;
+        delete B;
+    }
+};
+
 // TEST(binary, capacity); //mb some tricky stuff with T in bigger?
-// TEST(binary, OR);
-// TEST(binary, AND);
-// TEST(binary, NOT); //soon 
+TEST_F(BinaryTest, OR){
+    TritSet C = (*A) | (*B);
+    EXPECT_EQ(C[0], Trit::False);
+    EXPECT_EQ(C[1], Trit::Unknown);
+    EXPECT_EQ(C[5], Trit::True);
+    EXPECT_EQ(C[6], Trit::True);
+    EXPECT_EQ(C[8], Trit::True);
+}
+
+TEST_F(BinaryTest, AND){
+    TritSet C = (*A) & (*B);
+    EXPECT_EQ(C[0], Trit::False);
+    EXPECT_EQ(C[1], Trit::False);
+    EXPECT_EQ(C[3], Trit::False);
+    EXPECT_EQ(C[4], Trit::Unknown);
+    EXPECT_EQ(C[8], Trit::True);
+}
+TEST(binary, NOT){
+    TritSet set(10);
+    set[1] = Trit::False;
+    set[2] = Trit::True;
+    TritSet not_set = ~set;
+    EXPECT_EQ(not_set[1], Trit::True);
+    EXPECT_EQ(not_set[2], Trit::False);
+    EXPECT_EQ(not_set[0], Trit::Unknown);
+} 
+
+// TEST(stress) do i really need it?

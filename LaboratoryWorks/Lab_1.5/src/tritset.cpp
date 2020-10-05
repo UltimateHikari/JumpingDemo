@@ -33,7 +33,7 @@ void TritSet :: resize(std::size_t index){
         expanded_array[i] = 0;
     }
     int last_significant_chunk = min(ind_to_chunk(index), ind_to_chunk(actual_size));
-    for(int i = 0; i <= last_significant_chunk; i++){
+    for(int i = 0; i <= last_significant_chunk; i++){ //can take with us some unwanted data at the end
         expanded_array[i] = array[i];
     }
     delete[] array;
@@ -97,6 +97,16 @@ size_t TritSet :: capacity() const{
     return actual_size; // more logical as for container
 }
 
+TritSet& TritSet :: operator = (TritSet set){
+    if(capacity() < set.length()){
+        resize(set.length());
+    }
+    for(int i = 0; i < set.length(); i++){
+        (*this)[i] = static_cast<Trit>(set[i]);
+    }
+    return (*this);
+}
+
 TritSet::reference TritSet :: operator [](size_t index){
     return TritSet::reference(index, *this);
 }
@@ -124,11 +134,11 @@ TritSet& TritSet :: operator &=(const TritSet& A){
         resize(A.length());
     }
     for(int i = 0; i < capacity(); i++){
-        if((*this)[i] == Trit::False || A[i] == Trit::False){
+        if((*this)[i] != Trit::False && A[i] == Trit::False){
             (*this)[i] = Trit::False;
         }
-        if((*this)[i] == Trit::True && A[i] == Trit::True){
-            (*this)[i] = Trit::True;
+        if((*this)[i] == Trit::True && A[i] == Trit::Unknown){
+            (*this)[i] = Trit::Unknown;
         }
     }
     return *this;
@@ -139,26 +149,28 @@ TritSet& TritSet :: operator |=(const TritSet& A){
         resize(A.length());
     }
     for(int i = 0; i < capacity(); i++){
-        if((*this)[i] == Trit::False && A[i] == Trit::False){
-            (*this)[i] = Trit::False;
-        }
-        if((*this)[i] == Trit::True || A[i] == Trit::True){
+        if((*this)[i] != Trit::True && A[i] == Trit::True){
             (*this)[i] = Trit::True;
+        }
+        if((*this)[i] == Trit::False && A[i] == Trit::Unknown){
+            (*this)[i] = Trit::Unknown;
         }
     }
     return *this;
 }
 
-TritSet& TritSet :: operator ~(){
-    for(int i = 0; i < capacity(); i++){
-        if((*this)[i] == Trit::False){
-            (*this)[i] = Trit::True;
+TritSet operator ~(const TritSet& A){
+    TritSet C(A);
+    for(int i = 0; i < C.capacity(); i++){
+        if(C[i] == Trit::False){
+            C[i] = Trit::True;
+            continue;
         }
-        if((*this)[i] == Trit::True){
-            (*this)[i] = Trit::False;
+        if(C[i] == Trit::True){
+            C[i] = Trit::False;
         }
     }
-    return *this;
+    return C;
 }
 
 TritSet operator & (const TritSet& A, const TritSet& B){

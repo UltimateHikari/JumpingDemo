@@ -12,7 +12,7 @@ TEST(tritset, initialization){
 
 TEST(tritset, setnget){
     TritSet set(100);
-    for(int i = 0; i <= 8*sizeof(std::size_t); i++){
+    for(int i = 0; i <= 100; i++){
         ASSERT_EQ(set[i], Trit::Unknown) << "on index " << i;
         set[i] = Trit::False;
         ASSERT_EQ(set[i], Trit::False) << "on index " << i;
@@ -72,6 +72,9 @@ TEST(resize, allocations){
 
     set[1000] = Trit::True; 
     EXPECT_LT(allocated, set.underlaying_capacity());
+    for(int i = 0; i < 1000; i++){
+        EXPECT_EQ(set[i], Trit::Unknown);
+    }
 
     allocated = set.underlaying_capacity();
     set[10000] = Trit::Unknown; 
@@ -82,9 +85,12 @@ TEST(resize, allocations){
 TEST(resize, to_last){
     TritSet set(10);
     set[100] = Trit::False;
+    std::cerr << set;
     int allocated = set.underlaying_capacity();
     set[100] = Trit::Unknown;
+        std::cerr << set;
     set[50] = Trit::False;
+        std::cerr << set;
     set.shrink();
     EXPECT_GT(allocated, set.underlaying_capacity()) << "and length is " << set.length();
 }

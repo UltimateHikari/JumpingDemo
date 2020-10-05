@@ -38,6 +38,7 @@ class TritSet{
 
         int cardinality(Trit value);
         std::unordered_map< Trit, int > cardinality();
+        friend std::ostream&  operator << (std::ostream& ofs, const TritSet& set);
 };
 
 TritSet operator & (const TritSet& A, const TritSet& B);

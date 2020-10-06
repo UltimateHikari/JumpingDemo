@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <SDL.h>
+#include "SDL.h"
 
 struct Color {
     int r = 0;

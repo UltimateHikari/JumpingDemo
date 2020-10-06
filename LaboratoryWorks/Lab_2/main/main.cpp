@@ -5,7 +5,7 @@
 #include <set>
 #include <algorithm>
 
-#include "../graphics/visualizer.h"
+//#include "../graphics/visualizer.h"
 #include "element.h"
 
 std::vector<Elem> create(int size) {
@@ -21,22 +21,25 @@ std::vector<Elem> create(int size) {
             index++;
         }
     }
-    Visualizer::getInstance().setContainer(vect.begin(), vect.end());
-    Visualizer::getInstance().clear();
+    //Visualizer::getInstance().setContainer(vect.begin(), vect.end());
+    //Visualizer::getInstance().clear();
     return vect;
 }
 
-int SDL_main(int argc, char **argv) {
-    std::vector<Elem> vect{create(100)};  
-    Visualizer::getInstance().clear();
+// int SDL_main(int argc, char **argv) {
+//     std::vector<Elem> vect{create(100)};  
+//     Visualizer::getInstance().clear();
 
-    std::sort(vect.begin(), vect.end());
+//     std::sort(vect.begin(), vect.end());
 
-    Visualizer::getInstance().draw();
-    return 0;
-}
+//     Visualizer::getInstance().draw();
+//     return 0;
+// }
 
 int main(int argc, char **argv){
+    std::vector<Elem> vect{create(100)};
+    std::sort(vect.begin(), vect.end());
+
     std::cout << "Hello World" << std::endl;
     return 0;
 }

@@ -5,6 +5,7 @@
 
 TEST(tritset, initialization){
     TritSet set(100);
+    EXPECT_EQ(set.capacity(), 100);
     for(int i = 0; i < 100; i++){
         EXPECT_EQ(static_cast<Trit>(set[i]), Trit::Unknown);
     }
@@ -61,7 +62,18 @@ TEST(constructors, copy){
     EXPECT_EQ(A[99], B[99]);
 }
 
-//TEST(constructors, assign);
+TEST(constructors, assign){
+    TritSet A(100);
+    A[10] = Trit::True; A[33] = Trit::False;
+    TritSet B = A;
+    EXPECT_EQ(B[10], Trit::True);
+    EXPECT_EQ(B[33], Trit::False);
+    EXPECT_EQ(B.length(), 34);
+    B[33] = Trit::Unknown;
+    EXPECT_EQ(B.length(), 11);
+    B[10] = Trit::Unknown;
+    EXPECT_EQ(B.length(), 0);
+}
 
 TEST(resize, allocations){
     TritSet set(100);
@@ -158,7 +170,15 @@ class BinaryTest : public ::testing::Test {
     }
 };
 
-// TEST(binary, capacity); //mb some tricky stuff with T in bigger?
+TEST_F(BinaryTest, capacity){ //mb some tricky stuff with T in bigger?
+    TritSet big(100);
+    big[0] = Trit::False;
+    big[90] = Trit::True;
+    TritSet C = (*A) & big;
+    EXPECT_GT(C.capacity(), (*A).capacity());
+    TritSet D = (*A) | big;
+    EXPECT_GT(D.capacity(), (*A).capacity());
+}
 TEST_F(BinaryTest, OR){
     TritSet C = (*A) | (*B);
     EXPECT_EQ(C[0], Trit::False);
@@ -176,14 +196,33 @@ TEST_F(BinaryTest, AND){
     EXPECT_EQ(C[4], Trit::Unknown);
     EXPECT_EQ(C[8], Trit::True);
 }
-TEST(binary, NOT){
-    TritSet set(10);
-    set[1] = Trit::False;
-    set[2] = Trit::True;
-    TritSet not_set = ~set;
-    EXPECT_EQ(not_set[1], Trit::True);
-    EXPECT_EQ(not_set[2], Trit::False);
-    EXPECT_EQ(not_set[0], Trit::Unknown);
+TEST_F(BinaryTest, NOT){
+    TritSet B = ~(*A);
+    EXPECT_EQ(B[1], Trit::True);
+    EXPECT_EQ(B[6], Trit::False);
+    EXPECT_EQ(B[3], Trit::Unknown);
 } 
 
-// TEST(stress) do i really need it?
+TEST(stress, resize){
+    TritSet set(100);
+    set[1e8] = Trit::False;
+}
+
+TEST(stress, length){
+    TritSet set(1e8);
+    set[1e8 - 1] = Trit::True;
+    EXPECT_EQ(set.length(), 1e8);
+}
+
+TEST(stress, trim){
+    TritSet set(1e5);
+    set[1e7] = Trit::False;
+    set[1e6 - 1] = Trit::True;
+    set.trim(1e6);
+    EXPECT_EQ(set[1e7], Trit::Unknown);
+    set.shrink();
+    EXPECT_EQ(set.capacity(), 1e6);
+}
+
+//TEST(stress, copy_constructor);
+//TEST(stress, assign_constructor);

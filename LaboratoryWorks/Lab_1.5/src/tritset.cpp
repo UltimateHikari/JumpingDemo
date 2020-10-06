@@ -194,8 +194,13 @@ int TritSet :: cardinality(Trit value){
 }
 
 void TritSet::trim(size_t last_index){
-    for(int i = last_index; i < length(); i++){
+    size_t last_chunk = ind_to_chunk(last_index);
+    size_t precise_zeroing_end_index = (last_chunk + 1) * 4 * sizeof(size_t);
+    for(int i = last_index; i < precise_zeroing_end_index; i++){
         (*this)[i] = Trit::Unknown;
+    }
+    for(int i = last_chunk + 1; i <= ind_to_chunk(actual_size); i++){
+        array[i] = 0;
     }
 }
 

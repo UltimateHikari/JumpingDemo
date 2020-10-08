@@ -12,9 +12,8 @@ public:
     operator int() const {
         return data;
     }
-    void set_index(int index_);
-    int get_index();
+    Elem& operator = (const Elem& el);
+    int get_index() const;
 };
 
 bool operator < (Elem & a, Elem& b);
-void swap_elem_indexes(Elem & a, Elem & b);

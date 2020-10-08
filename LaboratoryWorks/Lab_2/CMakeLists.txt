@@ -11,7 +11,7 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 
 
 include_directories(src graphics)
-set(SRCS main/main.cpp main/element.cpp)
+set(SRCS main/main.cpp graphics/commands.cpp main/element.cpp graphics/visualizer.cpp graphics/window.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS})
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})

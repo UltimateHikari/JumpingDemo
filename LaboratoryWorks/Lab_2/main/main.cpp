@@ -29,7 +29,8 @@ std::vector<Elem> create(int size) {
 int main(int argc, char **argv) {
     std::vector<Elem> vect{create(100)};  
     Visualizer::getInstance().clear();
-    std::sort(vect.begin(), vect.end());
+    //std::sort(vect.begin(), vect.end());
+    std::stable_sort(vect.begin(), vect.end());
     Visualizer::getInstance().draw();
     return 0;
 }

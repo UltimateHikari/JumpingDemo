@@ -9,11 +9,17 @@ public:
 };
 
 class BinaryCommand : public Command {
-protected:
+private:
     int lField;
     int rField;
 public:
     BinaryCommand(int lField, int rField);
+    int getLField() const{
+        return lField;
+    };
+    int getRField() const{
+        return rField;
+    };
 };
 
 class Assign : public BinaryCommand {

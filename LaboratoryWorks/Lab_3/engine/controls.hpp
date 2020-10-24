@@ -22,7 +22,8 @@ class FreeCamera : public CameraEntity{
         FreeCamera();
         FreeCamera(
             glm::vec3 position_, 
-            glm::vec3 direction_
+            float hAngle,
+            float vAngle
             );
         void computeMatricesFromInputs(GLFWwindow* window);
         glm::mat4 getViewMatrix() const;

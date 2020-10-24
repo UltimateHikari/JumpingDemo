@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdlib.h>
+#include <vector>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -7,11 +7,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
+#include <stdlib.h>
 #include <random>
 #include <time.h>
 
 #include "../engine/shader.hpp"
 #include "../engine/controls.hpp"
+#include "../engine/objloader.hpp"
 
 int main( void )
 {
@@ -36,9 +38,8 @@ int main( void )
 	glewExperimental = true; // Needed for core profile
 	if (glewInit() != GLEW_OK) {
 		fprintf(stderr, "Failed to initialize GLEW\n");
-		getchar();
 		glfwTerminate();
-		return -1;
+		return EXIT_FAILURE;
 	}
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -49,57 +50,20 @@ int main( void )
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
+	//shaders
 	GLuint programID = LoadShaders( 
 		"../shaders/VShader.vertexshader", 
 		"../shaders/FShader.fragmentshader"
 		);
-
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
-	// static const GLfloat g_vertex_buffer_data[] = { 
-	// 	-1.0f, -1.0f, 0.0f,
-	// 	 1.0f, -1.0f, 0.0f,
-	// 	 0.0f,  1.0f, 0.0f,
-	// };
-
-	static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f,-1.0f,-1.0f, 
-		-1.0f,-1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f,-1.0f, 
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f, 
-		1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f
-	};
+	//obj
+	std::vector<vec3> vertices;
+	std::vector<vec2> uvs;
+	std::vector<vec3> normals; 
+	if(!loadOBJ("../src/cube.obj", vertices, uvs, normals)){
+		return EXIT_FAILURE;
+	}
 
 	srand(time(NULL));
 	static GLfloat g_color_buffer_data[12*3*3];
@@ -113,7 +77,7 @@ int main( void )
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vec3), &vertices[0], GL_STATIC_DRAW);
 
 	GLuint colorbuffer;
 	glGenBuffers(1, &colorbuffer);
@@ -128,6 +92,7 @@ int main( void )
 
 	//Spawn some cameras
 	FreeCamera camera;
+	glfwSetCursorPos(window, 1024/2, 768/2); // TODO parameters
 
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -170,7 +135,7 @@ int main( void )
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 3*12); //Draw finally
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Draw finally
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);

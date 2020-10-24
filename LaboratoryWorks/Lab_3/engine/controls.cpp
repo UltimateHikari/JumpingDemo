@@ -6,6 +6,8 @@ using namespace glm;
 
 #include "controls.hpp"
 
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 mat4 FreeCamera :: getViewMatrix() const{
 	return lookAt(
@@ -18,10 +20,9 @@ mat4 FreeCamera :: getProjectionMatrix() const{
 }
 
 FreeCamera::FreeCamera() :
-	position(vec3(0,0,5)),
-	direction(vec3(0,0,-1)),
-	horizontalAngle(3.14f),
-	verticalAngle(0.0f),
+	position(vec3(3,3,3)),
+	horizontalAngle(-2.35f),
+	verticalAngle(-0.8f),
 	speed(3.0f),
 	mouseSpeed(0.005f),
 	FoV(60.0f)
@@ -29,9 +30,11 @@ FreeCamera::FreeCamera() :
 
 FreeCamera::FreeCamera(
 	vec3 position_, 
-	vec3 direction_) : FreeCamera{} {
+	float hAngle,
+	float vAngle) : FreeCamera{} {
 		position = position_;
-		direction = direction_;
+		horizontalAngle = hAngle;
+		verticalAngle = vAngle;
 	};
 
 
@@ -79,6 +82,7 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window){
 	if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
 		position -= right * deltaTime * speed;
 	}
-
+	//std::cerr << to_string(direction) << std::endl;
+	//std::cerr << horizontalAngle << std::endl;
 	lastTime = currentTime;
 }

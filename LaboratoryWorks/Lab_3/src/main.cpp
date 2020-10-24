@@ -11,6 +11,7 @@ using namespace glm;
 #include <time.h>
 
 #include "../engine/shader.hpp"
+#include "../engine/controls.hpp"
 
 int main( void )
 {
@@ -52,13 +53,6 @@ int main( void )
 		"../shaders/VShader.vertexshader", 
 		"../shaders/FShader.fragmentshader"
 		);
-
-	//generating matrices
-	mat4 projection = perspective(radians(45.0f), 4.0f/3.0f, 0.1f, 100.0f);
-	//mat4 projection = ortho(-5.0f,5.0f,-5.f,5.f,0.0f,10.0f);
-	mat4 view = lookAt(vec3(4,3,3), vec3(0,0,0), vec3(0,1,0));
-	mat4 model = mat4(1.0f); // E, no translation
-	mat4 mvp = projection * view * model; //backwards
 
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
@@ -134,6 +128,16 @@ int main( void )
 
 		glUseProgram(programID);
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		//generating matrices
+		//mat4 projection = perspective(radians(45.0f), 4.0f/3.0f, 0.1f, 100.0f);
+		//mat4 projection = ortho(-5.0f,5.0f,-5.f,5.f,0.0f,10.0f);
+		//mat4 view = lookAt(vec3(4,3,3), vec3(0,0,0), vec3(0,1,0));
+		computeMatricesFromInputs(window);
+		mat4 projection = getProjectionMatrix();
+		mat4 view = getViewMatrix();
+		mat4 model = mat4(1.0f); // E, no translation
+		mat4 mvp = projection * view * model; //backwards
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

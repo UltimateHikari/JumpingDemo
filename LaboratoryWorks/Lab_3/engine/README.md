@@ -1,0 +1,1 @@
+yea im stealing this stuff from tutorial, `cause my goal is oop mainly

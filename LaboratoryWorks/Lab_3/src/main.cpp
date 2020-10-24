@@ -14,6 +14,7 @@ using namespace glm;
 #include "../engine/shader.hpp"
 #include "../engine/controls.hpp"
 #include "../engine/objloader.hpp"
+#include "../engine/vboindexer.hpp"
 
 int main( void )
 {
@@ -43,6 +44,7 @@ int main( void )
 	}
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
@@ -58,10 +60,11 @@ int main( void )
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
 	//obj
+	std::vector< short unsigned int > indices;
 	std::vector<vec3> vertices;
 	std::vector<vec2> uvs;
 	std::vector<vec3> normals; 
-	if(!loadOBJ("../src/cube.obj", vertices, uvs, normals)){
+	if(!loadAssImp("../src/cube.obj", indices, vertices, uvs, normals)){
 		return EXIT_FAILURE;
 	}
 
@@ -84,11 +87,18 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
+	GLuint elementbuffer;
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+
 	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Spawn some cameras
 	FreeCamera camera;
@@ -98,12 +108,7 @@ int main( void )
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		//generating matrices
-		//mat4 projection = perspective(radians(45.0f), 4.0f/3.0f, 0.1f, 100.0f);
-		//mat4 projection = ortho(-5.0f,5.0f,-5.f,5.f,0.0f,10.0f);
-		//mat4 view = lookAt(vec3(4,3,3), vec3(0,0,0), vec3(0,1,0));
 		camera.computeMatricesFromInputs(window);
 		mat4 projection = camera.getProjectionMatrix();
 		mat4 view = camera.getViewMatrix();
@@ -112,30 +117,16 @@ int main( void )
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  
-			3,                  
-			GL_FLOAT,           
-			GL_FALSE,           
-			0,                  
-			(void*)0            
-		);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-		glVertexAttribPointer(
-			1,                  
-			3,                  
-			GL_FLOAT,           
-			GL_FALSE,           
-			0,                  
-			(void*)0            
-		);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
-
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Draw finally
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0); //Draw finally
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -148,6 +139,7 @@ int main( void )
 		   glfwWindowShouldClose(window) == 0 );
 
 	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &colorbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
 	glfwTerminate();

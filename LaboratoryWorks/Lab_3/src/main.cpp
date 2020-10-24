@@ -120,8 +120,14 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
+	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	// Cull triangles which normal is not towards the camera
+	glEnable(GL_CULL_FACE);
+
+	//Spawn some cameras
+	FreeCamera camera;
 
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -133,9 +139,9 @@ int main( void )
 		//mat4 projection = perspective(radians(45.0f), 4.0f/3.0f, 0.1f, 100.0f);
 		//mat4 projection = ortho(-5.0f,5.0f,-5.f,5.f,0.0f,10.0f);
 		//mat4 view = lookAt(vec3(4,3,3), vec3(0,0,0), vec3(0,1,0));
-		computeMatricesFromInputs(window);
-		mat4 projection = getProjectionMatrix();
-		mat4 view = getViewMatrix();
+		camera.computeMatricesFromInputs(window);
+		mat4 projection = camera.getProjectionMatrix();
+		mat4 view = camera.getViewMatrix();
 		mat4 model = mat4(1.0f); // E, no translation
 		mat4 mvp = projection * view * model; //backwards
 

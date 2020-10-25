@@ -9,12 +9,14 @@ set(ALL_LIBS
 	${OPENGL_LIBRARY}
 	glfw
 	GLEW
+    assimp
 )
 
 set(SRCS
     src/main.cpp
     engine/shader.hpp
     src/window.cpp
+    src/model.cpp
     )
 
 set(SHADERS

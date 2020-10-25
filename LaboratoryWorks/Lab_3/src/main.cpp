@@ -121,7 +121,7 @@ int main( void ){
 	glDeleteBuffers(1, &colorbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
-
+	//Window destructor saves the day
 	return EXIT_SUCCESS;
 }
 

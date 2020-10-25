@@ -20,9 +20,7 @@ using namespace glm;
 #include <glm/gtx/string_cast.hpp>
 
 
-int main( void )
-{
-	// initialise() 
+int main( void ){
 	Window w(1024,768);
 	//glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
@@ -71,7 +69,7 @@ int main( void )
 	GLuint elementbuffer;
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(short unsigned int), &indices[0], GL_STATIC_DRAW);
 
 
 	//well, depth-test
@@ -107,7 +105,7 @@ int main( void )
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0); //Draw finally
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0); //Draw finally
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);

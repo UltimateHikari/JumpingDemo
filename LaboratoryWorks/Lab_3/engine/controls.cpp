@@ -21,8 +21,8 @@ mat4 FreeCamera :: getProjectionMatrix() const{
 
 FreeCamera::FreeCamera() :
 	position(vec3(3,3,3)),
-	horizontalAngle(-2.35f),
-	verticalAngle(-0.8f),
+	horizontalAngle(3.80f),
+	verticalAngle(-0.2f),
 	speed(3.0f),
 	mouseSpeed(0.005f),
 	FoV(60.0f)

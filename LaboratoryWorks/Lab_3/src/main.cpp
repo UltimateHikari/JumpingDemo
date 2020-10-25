@@ -15,37 +15,15 @@ using namespace glm;
 #include "../engine/controls.hpp"
 #include "../engine/objloader.hpp"
 #include "../engine/vboindexer.hpp"
+#include "window.hpp"
+
+#include <glm/gtx/string_cast.hpp>
+
 
 int main( void )
 {
 	// initialise() 
-	GLFWwindow* window;
-	if( !glfwInit() ){
-		std::cerr << "Failed to initialize GLFW\n";
-		return EXIT_FAILURE;
-	}
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow( 1024, 768, "Lab3", NULL, NULL);
-	if( window == NULL ){
-		std::cerr << "Failed to open GLFW window.\n";
-		glfwTerminate();
-		return EXIT_FAILURE;
-	}
-	glfwMakeContextCurrent(window);
-
-	glewExperimental = true; // Needed for core profile
-	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW\n");
-		glfwTerminate();
-		return EXIT_FAILURE;
-	}
-
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+	Window w(1024,768);
 	//glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
 	GLuint VertexArrayID;
@@ -67,6 +45,9 @@ int main( void )
 	if(!loadAssImp("../src/cube.obj", indices, vertices, uvs, normals)){
 		return EXIT_FAILURE;
 	}
+	//std::cerr << vertices.size() << " " << indices.size() << std::endl;
+
+
 
 	srand(time(NULL));
 	static GLfloat g_color_buffer_data[12*3*3];
@@ -102,14 +83,14 @@ int main( void )
 
 	//Spawn some cameras
 	FreeCamera camera;
-	glfwSetCursorPos(window, 1024/2, 768/2); // TODO parameters
+	glfwSetCursorPos(w.getWindow(), 1024/2, 768/2); // TODO parameters
 
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(programID);
 
-		camera.computeMatricesFromInputs(window);
+		camera.computeMatricesFromInputs(w.getWindow());
 		mat4 projection = camera.getProjectionMatrix();
 		mat4 view = camera.getViewMatrix();
 		mat4 model = mat4(1.0f); // E, no translation
@@ -131,18 +112,17 @@ int main( void )
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(w.getWindow());
 		glfwPollEvents();
 
 	} 
-	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-		   glfwWindowShouldClose(window) == 0 );
+	while( glfwGetKey(w.getWindow(), GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+		   glfwWindowShouldClose(w.getWindow()) == 0 );
 
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &colorbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
-	glfwTerminate();
 
 	return EXIT_SUCCESS;
 }

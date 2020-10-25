@@ -14,6 +14,7 @@ set(ALL_LIBS
 set(SRCS
     src/main.cpp
     engine/shader.hpp
+    src/window.cpp
     )
 
 set(SHADERS

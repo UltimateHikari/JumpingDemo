@@ -3,6 +3,7 @@ set(ENGINE_SRCS
     controls.cpp
     objloader.cpp
     vboindexer.cpp
+    stb_image.cpp
     )
 
 add_library(MyEngine ${ENGINE_SRCS})

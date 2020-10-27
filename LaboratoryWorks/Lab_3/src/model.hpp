@@ -3,9 +3,19 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <map>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+#include "../engine/stb_image.h"
 #include "../engine/shader.hpp"
 
 struct Vertex{
@@ -17,6 +27,7 @@ struct Vertex{
 struct Texture{
     GLuint id;
     std::string type;
+    std::string path;
 };
 
 class Mesh{
@@ -36,4 +47,22 @@ public:
         std::vector<Texture> textures_
         );
     void Draw(Shader shader);
+};
+
+class Model 
+{
+    public:
+        Model(std::string const& path){
+            loadModel(path);
+        }
+        void Draw(Shader &shader);	
+    private:
+        std::vector <Texture> textures_loaded;
+        std::vector<Mesh> meshes;
+        std::string directory;
+ 
+        void loadModel(std::string const& path);
+        void processNode(aiNode *node, const aiScene *scene);
+        Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+        std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };

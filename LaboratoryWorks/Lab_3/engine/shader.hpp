@@ -1,11 +1,14 @@
 #pragma once
 #include <string>
 
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
-
-class Shader{ //dummy lol
-    private:
-        int dummy;
-    public:
-    void setFloat(const std::string& name, float value);
+class Shader{
+private:
+    GLuint ProgramID;
+public:
+    GLuint getID();
+    Shader(const char* vertex_file_path, const char* fragment_file_path);
+    void use();
+    void setBool(const std::string &name, bool value) const;  
+    void setInt(const std::string &name, int value) const;   
+    void setFloat(const std::string &name, float value) const;
 };

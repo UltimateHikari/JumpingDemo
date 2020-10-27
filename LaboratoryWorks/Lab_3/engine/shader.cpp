@@ -10,6 +10,7 @@ using namespace std;
 #include <string.h>
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include "shader.hpp"
 
@@ -74,7 +75,7 @@ Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path){
 		std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 		for(auto i:FragmentShaderErrorMessage){
-			std::cerr << FragmentShaderErrorMessage[i];
+			std::cerr << i;
 		}
 		std::cerr << std::endl;
 	}
@@ -92,7 +93,7 @@ Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path){
 		std::vector<char> ProgramErrorMessage(InfoLogLength+1);
 		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		for(auto i:ProgramErrorMessage){
-			std::cerr << ProgramErrorMessage[i];
+			std::cerr << i;
 		}
 		std::cerr << std::endl;
 	}
@@ -122,3 +123,7 @@ void Shader :: setInt(const std::string &name, int value) const {
 void Shader :: setFloat(const std::string &name, float value) const { 
     glUniform1f(glGetUniformLocation(ProgramID, name.c_str()), value); 
 } 
+
+void Shader :: setMat4(const std::string& name, const glm::mat4& mat) const{
+	glUniformMatrix4fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}

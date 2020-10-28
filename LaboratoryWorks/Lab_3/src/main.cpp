@@ -8,8 +8,6 @@
 using namespace glm;
 
 #include <stdlib.h>
-#include <random>
-#include <time.h>
 
 #include "../engine/shader.hpp"
 #include "../engine/controls.hpp"
@@ -33,20 +31,13 @@ int main( void ){
 	Model model(
 		"../src/cube.obj"
 		);
-		
-	// srand(time(NULL));
-	// static GLfloat g_color_buffer_data[12*3*3];
-	// for(int i = 0; i < 12*3; ++i){
-	// 	g_color_buffer_data[3*i] = (float)rand()/RAND_MAX;
-	// 	g_color_buffer_data[3*i + 1] = (float)rand()/RAND_MAX;
-	// 	g_color_buffer_data[3*i + 2] = (float)rand()/RAND_MAX;
-	// }
+
 	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
 	//glEnable(GL_CULL_FACE);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Spawn some cameras
 	FreeCamera camera;

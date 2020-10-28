@@ -1,12 +1,14 @@
 #include "model.hpp"
+#include <glm/gtx/string_cast.hpp>
+
 using namespace std;
 
 unsigned int TextureFromFile(const char *path, const string &directory);
 
 Mesh :: Mesh(
-        std::vector<Vertex> vertices_,
-        std::vector<GLuint> indices_,
-        std::vector<Texture> textures_
+        vector<Vertex> vertices_,
+        vector<unsigned short> indices_,
+        vector<Texture> textures_
         ){
     vertices = std::move(vertices_);
     indices = std::move(indices_);
@@ -17,14 +19,14 @@ Mesh :: Mesh(
 void Mesh :: prepareMesh(){
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), 
             &vertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned short), 
             &indices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);	
@@ -41,25 +43,25 @@ void Mesh :: prepareMesh(){
 
 void Mesh :: Draw(Shader shader) 
 {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    for(unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i);
-        string number;
-        string name = textures[i].type;
-        if(name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if(name == "texture_specular")
-            number = std::to_string(specularNr++);
+    // unsigned int diffuseNr = 1;
+    // unsigned int specularNr = 1;
+    // for(unsigned int i = 0; i < textures.size(); i++)
+    // {
+    //     glActiveTexture(GL_TEXTURE0 + i);
+    //     string number;
+    //     string name = textures[i].type;
+    //     if(name == "texture_diffuse")
+    //         number = std::to_string(diffuseNr++);
+    //     else if(name == "texture_specular")
+    //         number = std::to_string(specularNr++);
  
-        shader.setFloat(("material." + name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }
-    glActiveTexture(GL_TEXTURE0);
+    //     shader.setFloat(("material." + name + number).c_str(), i);
+    //     glBindTexture(GL_TEXTURE_2D, textures[i].id);
+    // }
+    // glActiveTexture(GL_TEXTURE0);
  
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
     glBindVertexArray(0);
 } 
 
@@ -80,6 +82,7 @@ void Model :: Draw(Shader &shader){
 
     // рекурсивная обработка корневого узла ASSIMP
     processNode(scene->mRootNode, scene);
+    std::cerr << meshes.size() << " mesh(es) loaded\n";
 }
 
 void Model :: processNode(aiNode *node, const aiScene *scene){
@@ -94,7 +97,7 @@ void Model :: processNode(aiNode *node, const aiScene *scene){
 
 Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
     vector<Vertex> vertices;
-    vector<unsigned int> indices;
+    vector<unsigned short> indices;
     vector<Texture> textures;
 
     for(unsigned int i = 0; i < mesh->mNumVertices; i++){
@@ -113,7 +116,7 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
 
         if(mesh->mTextureCoords[0]) {
             glm::vec2 vec;
-            // up to 9 but taking first
+            // up to 8 but taking first
             vec.x = mesh->mTextureCoords[0][i].x; 
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.textureCoords = vec;
@@ -123,11 +126,13 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
     }
     for(unsigned int i = 0; i < mesh->mNumFaces; i++){
         aiFace face = mesh->mFaces[i];
-        for(unsigned int j = 0; j < face.mNumIndices; j++)
+        for(unsigned int j = 0; j < face.mNumIndices; j++){
             indices.push_back(face.mIndices[j]);
+        }
     }
     // обрабатываем материалы
     if(mesh->mMaterialIndex >= 0){
+        std::cerr << "Loading textures..\n";
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];    
 
         vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -135,6 +140,18 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
         vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
+
+    // not belongs here
+    std::cerr << "Mesh loaded: " << vertices.size() << " vertices, " << indices.size() << " indices & " << textures.size() << " textures\n";
+        //temponary colors while textures not working
+    // srand(time(NULL));
+    // for(auto i:vertices){
+    //     float a = (float)rand()/RAND_MAX;
+    //     i.normal = glm::vec3(a,a,a);
+    //     //cerr << glm::to_string(i.position) << endl;
+    //     cerr << to_string(i.normal) << endl;
+    // } 
+
     return Mesh(vertices, indices, textures);
 }
 

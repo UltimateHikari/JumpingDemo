@@ -83,6 +83,6 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window){
 		position -= right * deltaTime * speed;
 	}
 	//std::cerr << to_string(direction) << std::endl;
-	//std::cerr << horizontalAngle << std::endl;
+	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
 	lastTime = currentTime;
 }

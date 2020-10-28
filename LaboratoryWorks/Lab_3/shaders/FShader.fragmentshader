@@ -2,13 +2,12 @@
 
 out vec3 color;
 in vec3 fColor;
-in vec2 TexCoords;
+in vec2 fTexCoords;
 
 uniform sampler2D texture_diffuse1;
 
 void main()
 {
-	//color = vec3(1,0,0);
 	color = fColor;
-	//color = texture(texture_diffuse1, TexCoords);
+	//color = texture(texture_diffuse1, fTexCoords);
 }

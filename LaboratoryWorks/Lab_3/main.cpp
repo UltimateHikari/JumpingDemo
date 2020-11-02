@@ -28,7 +28,10 @@ int main( void ){
 		);
 
 	Model model(
-		"../resources/IcoSphere.obj"
+		"../resources/checkedCube.obj"
+		);
+	Model scene(
+		"../resources/scene.obj"
 		);
 
 	//well, depth-test
@@ -50,9 +53,13 @@ int main( void ){
 		camera.computeMatricesFromInputs(w.getWindow());
 		shader.setMat4("projection", camera.getProjectionMatrix());
 		shader.setMat4("view", camera.getViewMatrix());
-		shader.setMat4("model", /*scale(mat4(1.0f), vec3(2.0f,2.0f,2.0f))*/ mat4(1.0f)); // E, no translation
+		shader.setMat4("model", translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); // E, no translation
 
 		model.Draw(shader);
+
+		shader.setMat4("model", scale(mat4(1.0f), vec3(40.0f,40.0f,40.0f)));
+
+		scene.Draw(shader);
 
 		glfwSwapBuffers(w.getWindow());
 		glfwPollEvents();

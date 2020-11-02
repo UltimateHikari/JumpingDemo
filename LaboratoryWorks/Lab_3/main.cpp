@@ -4,15 +4,14 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
 #include <stdlib.h>
 
-#include "../engine/shader.hpp"
-#include "../engine/controls.hpp"
-#include "../engine/objloader.hpp"
-#include "../engine/vboindexer.hpp"
+#include "shader.hpp"
+#include "controls.hpp"
 #include "window.hpp"
 #include "model.hpp"
 
@@ -29,15 +28,15 @@ int main( void ){
 		);
 
 	Model model(
-		"../src/cube.obj"
+		"../resources/IcoSphere.obj"
 		);
 
 	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
-	//glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_CULL_FACE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Spawn some cameras
 	FreeCamera camera;
@@ -51,7 +50,7 @@ int main( void ){
 		camera.computeMatricesFromInputs(w.getWindow());
 		shader.setMat4("projection", camera.getProjectionMatrix());
 		shader.setMat4("view", camera.getViewMatrix());
-		shader.setMat4("model", mat4(1.0f)); // E, no translation
+		shader.setMat4("model", /*scale(mat4(1.0f), vec3(2.0f,2.0f,2.0f))*/ mat4(1.0f)); // E, no translation
 
 		model.Draw(shader);
 

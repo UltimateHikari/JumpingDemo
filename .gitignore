@@ -5,6 +5,7 @@
 *.idb
 .vs/
 .vscode/
+*.code*
 *.suo
 *.ilk
 *.exe

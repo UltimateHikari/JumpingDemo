@@ -1,6 +1,6 @@
 #version 330 core
 
-out vec3 color;
+out vec4 color;
 in vec3 fColor;
 in vec2 fTexCoords;
 
@@ -8,6 +8,6 @@ uniform sampler2D texture_diffuse1;
 
 void main()
 {
-	color = fColor;
-	//color = texture(texture_diffuse1, fTexCoords);
+	//color = fColor;
+	color = texture(texture_diffuse1, fTexCoords);
 }

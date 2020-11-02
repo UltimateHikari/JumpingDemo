@@ -1,8 +1,8 @@
 set(ENGINE_SRCS
     shader.cpp
     controls.cpp
-    objloader.cpp
-    vboindexer.cpp
+    model.cpp
+    window.cpp
     stb_image.cpp
     )
 

@@ -13,10 +13,7 @@ set(ALL_LIBS
 )
 
 set(SRCS
-    src/main.cpp
-    engine/shader.hpp
-    src/window.cpp
-    src/model.cpp
+    main.cpp
     )
 
 set(SHADERS
@@ -25,4 +22,5 @@ set(SHADERS
     )
 
 add_executable(lab3 ${SRCS} ${SHADERS})
+target_include_directories(lab3 PUBLIC engine)
 target_link_libraries(lab3 ${ALL_LIBS} MyEngine)

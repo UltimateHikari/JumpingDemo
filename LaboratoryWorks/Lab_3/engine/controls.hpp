@@ -28,6 +28,7 @@ class FreeCamera : public CameraEntity{
         void computeMatricesFromInputs(GLFWwindow* window);
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
+        glm::vec3 getPosition() const;
 };
 
 #endif

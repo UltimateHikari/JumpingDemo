@@ -58,7 +58,7 @@ Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path){
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
 		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		for(auto i:VertexShaderErrorMessage){
-			std::cerr << VertexShaderErrorMessage[i];
+			std::cerr << i;
 		}
 		std::cerr << std::endl;
 	}
@@ -126,4 +126,8 @@ void Shader :: setFloat(const std::string &name, float value) const {
 
 void Shader :: setMat4(const std::string& name, const glm::mat4& mat) const{
 	glUniformMatrix4fv(glGetUniformLocation(ProgramID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader :: setVec3(const std::string& name, const glm::vec3& value) const{
+	glUniform3fv(glGetUniformLocation(ProgramID, name.c_str()), 1, &value[0]);
 }

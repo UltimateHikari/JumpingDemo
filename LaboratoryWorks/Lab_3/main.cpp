@@ -55,6 +55,9 @@ int main( void ){
 		shader.setMat4("view", camera.getViewMatrix());
 		shader.setMat4("model", translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); // E, no translation
 
+		shader.setVec3("lightPosition", vec3(4.0f,4.0f,2.0f));
+		shader.setVec3("viewPosition", camera.getPosition());
+
 		model.Draw(shader);
 
 		shader.setMat4("model", scale(mat4(1.0f), vec3(40.0f,40.0f,40.0f)));

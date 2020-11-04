@@ -19,6 +19,10 @@ mat4 FreeCamera :: getProjectionMatrix() const{
 				4.0f / 3.0f, 0.1f, 100.0f);
 }
 
+vec3 FreeCamera :: getPosition() const{
+	return position;
+}
+
 FreeCamera::FreeCamera() :
 	position(vec3(3,3,3)),
 	horizontalAngle(3.80f),

@@ -49,20 +49,30 @@ public:
     void Draw(Shader shader);
 };
 
-class Model 
-{
+class Model {
     public:
         Model(std::string const& path){
             loadModel(path);
         }
         void Draw(Shader &shader);	
     private:
-        std::vector <Texture> textures_loaded;
         std::vector<Mesh> meshes;
         std::string directory;
  
         void loadModel(std::string const& path);
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-        std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+};
+
+class TextureManager {
+private:
+    std::vector <Texture> textures_loaded;
+    TextureManager(){};
+public:
+    static TextureManager & getInstance();
+    std::vector<Texture> loadMaterials(
+        aiMaterial *mat, 
+        aiTextureType type, 
+        std::string typeName, 
+        std::string directory);
 };

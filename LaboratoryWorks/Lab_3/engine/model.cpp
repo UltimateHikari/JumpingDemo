@@ -43,22 +43,22 @@ void Mesh :: prepareMesh(){
 
 void Mesh :: Draw(Shader shader) 
 {
-    // unsigned int diffuseNr = 1;
-    // unsigned int specularNr = 1;
-    // for(unsigned int i = 0; i < textures.size(); i++)
-    // {
-    //     glActiveTexture(GL_TEXTURE0 + i);
-    //     string number;
-    //     string name = textures[i].type;
-    //     if(name == "texture_diffuse")
-    //         number = std::to_string(diffuseNr++);
-    //     else if(name == "texture_specular")
-    //         number = std::to_string(specularNr++);
+    unsigned int diffuseNr = 1;
+    unsigned int specularNr = 1;
+    for(unsigned int i = 0; i < textures.size(); i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        string number;
+        string name = textures[i].type;
+        if(name == "texture_diffuse")
+            number = std::to_string(diffuseNr++);
+        else if(name == "texture_specular")
+            number = std::to_string(specularNr++);
  
-    //     shader.setFloat(("material." + name + number).c_str(), i);
-    //     glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    // }
-    // glActiveTexture(GL_TEXTURE0);
+        shader.setFloat(("material." + name + number).c_str(), i);
+        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+    }
+    glActiveTexture(GL_TEXTURE0);
  
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
@@ -80,7 +80,6 @@ void Model :: Draw(Shader &shader){
     }
     directory = path.substr(0, path.find_last_of('/'));
 
-    // рекурсивная обработка корневого узла ASSIMP
     processNode(scene->mRootNode, scene);
     std::cerr << meshes.size() << " mesh(es) loaded\n";
 }
@@ -130,51 +129,38 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
             indices.push_back(face.mIndices[j]);
         }
     }
-    // обрабатываем материалы
+    // materials
     if(mesh->mMaterialIndex >= 0){
         std::cerr << "Loading textures..\n";
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];    
 
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        vector<Texture> diffuseMaps = TextureManager::getInstance().loadMaterials(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        vector<Texture> specularMaps = TextureManager::getInstance().loadMaterials(material, aiTextureType_SPECULAR, "texture_specular", directory);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
-    // not belongs here
     std::cerr << "Mesh loaded: " << vertices.size() << " vertices, " << indices.size() << " indices & " << textures.size() << " textures\n";
-        //temponary colors while textures not working
-    // srand(time(NULL));
-    // for(auto i:vertices){
-    //     float a = (float)rand()/RAND_MAX;
-    //     i.normal = glm::vec3(a,a,a);
-    //     //cerr << glm::to_string(i.position) << endl;
-    //     cerr << to_string(i.normal) << endl;
-    // } 
 
     return Mesh(vertices, indices, textures);
 }
 
-vector<Texture> Model :: loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName){
+vector<Texture> TextureManager :: loadMaterials(aiMaterial *mat, aiTextureType type, string typeName, string directory){
     vector<Texture> textures;
-    for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
-    {
+    for(unsigned int i = 0; i < mat->GetTextureCount(type); i++){
         aiString str;
         mat->GetTexture(type, i, &str);
         bool skip = false;
-        for(auto j:textures_loaded)
-        {
-            if(std::strcmp(j.path.data(), str.C_Str()) == 0)
-            {
+        for(auto j:textures_loaded){
+            if(std::strcmp(j.path.data(), str.C_Str()) == 0){
                 textures.push_back(j);
                 skip = true;
                 break;
             }
         }
-        if(!skip)
-        {  
+        if(!skip){  
             Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
+            texture.id = TextureFromFile(str.C_Str(), directory);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
@@ -222,4 +208,9 @@ unsigned int TextureFromFile(const char *path, const string &directory)
     }
 
     return textureID;
+}
+
+TextureManager& TextureManager::getInstance(){
+    static TextureManager textureManager;
+    return textureManager;
 }

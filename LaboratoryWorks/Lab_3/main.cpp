@@ -55,7 +55,18 @@ int main( void ){
 		shader.setMat4("view", camera.getViewMatrix());
 		shader.setMat4("model", translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); // E, no translation
 
-		shader.setVec3("lightPosition", vec3(4.0f,4.0f,2.0f));
+		shader.setVec3("light.position", vec3(4.0f,4.0f,2.0f));
+		shader.setVec3("light.ambient", vec3(0.1f,0.1f,0.1f));
+		shader.setVec3("light.diffuse", vec3(0.6f,0.6f,0.6f));
+		shader.setVec3("light.specular", vec3(1.0f,1.0f,1.0f));
+
+		shader.setFloat("light.constant", 1.0f);
+		shader.setFloat("light.lin", 0.09f);
+		shader.setFloat("light.quad", 0.0032f);
+
+		shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
+		shader.setFloat("material.shininess", 32.0f);
+
 		shader.setVec3("viewPosition", camera.getPosition());
 
 		model.Draw(shader);

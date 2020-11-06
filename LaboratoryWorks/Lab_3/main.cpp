@@ -34,9 +34,12 @@ int main( void ){
 	Model scene(
 		"../resources/scene.obj"
 		);
+	Model lampModel(
+		"../resources/lamp.obj"
+		);
 
 	DefaultLamp lamp(vec3(4.0f,4.0f,2.0f));
-	DefaultLamp lamp2(vec3(4.0f,-4.0f,-10.0f));
+	DefaultLamp lamp2(vec3(-4.0f,6.0f,-10.0f));
 	
 
 	//well, depth-test
@@ -74,6 +77,11 @@ int main( void ){
 		shader.setMat4("model", scale(mat4(1.0f), vec3(40.0f,40.0f,40.0f)));
 
 		scene.Draw(shader);
+
+		shader.setMat4("model", translate(mat4(1.0f), vec3(4.0f,4.0f,2.0f)));
+		lampModel.Draw(shader);
+		shader.setMat4("model", translate(mat4(1.0f), vec3(-4.0f,6.0f,-10.0f)));
+		lampModel.Draw(shader);
 
 		glfwSwapBuffers(w.getWindow());
 		glfwPollEvents();

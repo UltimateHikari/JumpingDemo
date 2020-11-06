@@ -4,6 +4,7 @@ set(ENGINE_SRCS
     model.cpp
     window.cpp
     stb_image.cpp
+    light.cpp
     )
 
 add_library(MyEngine ${ENGINE_SRCS})

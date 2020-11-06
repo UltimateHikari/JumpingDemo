@@ -41,7 +41,7 @@ void Mesh :: prepareMesh(){
     glBindVertexArray(0);
 }
 
-void Mesh :: Draw(Shader shader) 
+void Mesh :: Draw(Shader& shader) 
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
@@ -65,7 +65,7 @@ void Mesh :: Draw(Shader shader)
     glBindVertexArray(0);
 } 
 
-void Model :: Draw(Shader &shader){
+void Model :: Draw(Shader& shader){
     for(unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
 }

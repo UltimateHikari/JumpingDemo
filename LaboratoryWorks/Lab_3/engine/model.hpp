@@ -46,7 +46,7 @@ public:
         std::vector<unsigned short> indices_,
         std::vector<Texture> textures_
         );
-    void Draw(Shader shader);
+    void Draw(Shader& shader);
 };
 
 class Model {

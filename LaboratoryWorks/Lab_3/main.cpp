@@ -14,6 +14,7 @@ using namespace glm;
 #include "controls.hpp"
 #include "window.hpp"
 #include "model.hpp"
+#include "light.hpp"
 
 #include <glm/gtx/string_cast.hpp>
 
@@ -34,6 +35,8 @@ int main( void ){
 		"../resources/scene.obj"
 		);
 
+	DefaultLamp lamp;
+
 	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -45,24 +48,17 @@ int main( void ){
 	FreeCamera camera;
 	glfwSetCursorPos(w.getWindow(), 1024/2, 768/2); // TODO parameters
 
+	shader.use();
+
+	lamp.place(shader);
+
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		shader.use();
 
 		camera.computeMatricesFromInputs(w.getWindow());
 		shader.setMat4("projection", camera.getProjectionMatrix());
 		shader.setMat4("view", camera.getViewMatrix());
 		shader.setMat4("model", translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); // E, no translation
-
-		shader.setVec3("light.position", vec3(4.0f,4.0f,2.0f));
-		shader.setVec3("light.ambient", vec3(0.1f,0.1f,0.1f));
-		shader.setVec3("light.diffuse", vec3(0.6f,0.6f,0.6f));
-		shader.setVec3("light.specular", vec3(1.0f,1.0f,1.0f));
-
-		shader.setFloat("light.constant", 1.0f);
-		shader.setFloat("light.lin", 0.09f);
-		shader.setFloat("light.quad", 0.0032f);
 
 		shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
 		shader.setFloat("material.shininess", 32.0f);

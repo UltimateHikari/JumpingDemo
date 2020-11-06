@@ -1,4 +1,5 @@
 #include "light.hpp"
+#include <string>
 
 using namespace glm;
 
@@ -43,24 +44,29 @@ PointLight :: PointLight(
 {}
 
 void PointLight :: place(Shader& shader){
-    shader.setVec3("light.position", getVector());
-    shader.setVec3("light.ambient", getAmbient());
-    shader.setVec3("light.diffuse", getDiffuse());
-    shader.setVec3("light.specular", getSpecular());
+    GLuint lightIndex = shader.getBoundLights();
+    std::string prefix = "pointLights[" + std::to_string(lightIndex) + "].";
+    
+    shader.setVec3(prefix + "position", getVector());
+    shader.setVec3(prefix + "ambient", getAmbient());
+    shader.setVec3(prefix + "diffuse", getDiffuse());
+    shader.setVec3(prefix + "specular", getSpecular());
 
-    shader.setFloat("light.constant", getConstant());
-    shader.setFloat("light.lin", getLinear());
-    shader.setFloat("light.quad", getQuad());
+    shader.setFloat(prefix + "constant", getConstant());
+    shader.setFloat(prefix + "lin", getLinear());
+    shader.setFloat(prefix + "quad", getQuad());
+
+    shader.BindLight();
 };
 
-DefaultLamp :: DefaultLamp():
+DefaultLamp :: DefaultLamp(vec3 position):
     PointLight(
         LightColors(
             vec3(0.1f,0.1f,0.1f),
             vec3(0.6f,0.6f,0.6f),
             vec3(1.0f,1.0f,1.0f)
             ),
-        vec3(4.0f,4.0f,2.0f),
+        position,
         50.0
     )
 {}

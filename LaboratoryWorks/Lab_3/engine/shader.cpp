@@ -14,7 +14,7 @@ using namespace std;
 
 #include "shader.hpp"
 
-Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path){
+Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path): boundLights(0){
 
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -112,6 +112,17 @@ GLuint Shader :: getID(){
 
 void Shader :: use(){
 	glUseProgram(ProgramID);
+}
+
+GLuint Shader :: getBoundLights(){
+	return boundLights;
+}
+void Shader :: BindLight(){
+	boundLights++;
+}
+
+void Shader :: finalizeLight(){
+	glUniform1i(glGetUniformLocation(ProgramID, "actualPointLights"), boundLights);
 }
 
 void Shader :: setBool(const std::string &name, bool value) const {         

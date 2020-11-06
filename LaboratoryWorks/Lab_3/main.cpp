@@ -35,7 +35,9 @@ int main( void ){
 		"../resources/scene.obj"
 		);
 
-	DefaultLamp lamp;
+	DefaultLamp lamp(vec3(4.0f,4.0f,2.0f));
+	DefaultLamp lamp2(vec3(4.0f,-4.0f,-10.0f));
+	
 
 	//well, depth-test
 	glEnable(GL_DEPTH_TEST);
@@ -50,7 +52,9 @@ int main( void ){
 
 	shader.use();
 
-	lamp.place(shader);
+	lamp.place(shader);	
+	lamp2.place(shader);
+	shader.finalizeLight();
 
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

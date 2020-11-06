@@ -69,7 +69,7 @@ public:
 };
 class DefaultLamp : public PointLight{
 public:
-    DefaultLamp();
+    DefaultLamp(glm::vec3 position);
 };
 // class DirectionalLight : public Light{};
 // class SpotLight : public Light{};

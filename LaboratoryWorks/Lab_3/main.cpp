@@ -24,8 +24,13 @@ int main( void ){
 	//glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
 	Shader shader(
-		"../shaders/VShader.vertexshader", 
-		"../shaders/FShader.fragmentshader"
+		"../shaders/MaterialShader.vs", 
+		"../shaders/MaterialShader.fs"
+		);
+
+	Shader lightShader(
+		"../shaders/LightShader.vs", 
+		"../shaders/LightShader.fs"
 		);
 
 	Model model(
@@ -62,10 +67,13 @@ int main( void ){
 	do{
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		shader.use();
+
 		camera.computeMatricesFromInputs(w.getWindow());
 		shader.setMat4("projection", camera.getProjectionMatrix());
 		shader.setMat4("view", camera.getViewMatrix());
-		shader.setMat4("model", translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); // E, no translation
+		shader.setMat4("model", 
+			translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); 
 
 		shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
 		shader.setFloat("material.shininess", 32.0f);
@@ -74,14 +82,22 @@ int main( void ){
 
 		model.Draw(shader);
 
-		shader.setMat4("model", scale(mat4(1.0f), vec3(40.0f,40.0f,40.0f)));
+		shader.setMat4("model", 
+			scale(mat4(1.0f), vec3(40.0f)));
 
 		scene.Draw(shader);
 
-		shader.setMat4("model", translate(mat4(1.0f), vec3(4.0f,4.0f,2.0f)));
-		lampModel.Draw(shader);
-		shader.setMat4("model", translate(mat4(1.0f), vec3(-4.0f,6.0f,-10.0f)));
-		lampModel.Draw(shader);
+		lightShader.use();
+		lightShader.setMat4("projection", camera.getProjectionMatrix());
+		lightShader.setMat4("view", camera.getViewMatrix());
+		lightShader.setMat4("model", 
+			translate(mat4(1.0f), vec3(4.0f,4.0f,2.0f))
+			*scale(mat4(1.0f), vec3(0.5f)));
+		lampModel.Draw(lightShader);
+		lightShader.setMat4("model", 
+			translate(mat4(1.0f), vec3(-4.0f,6.0f,-10.0f))
+			*scale(mat4(1.0f), vec3(0.5f)));
+		lampModel.Draw(lightShader);
 
 		glfwSwapBuffers(w.getWindow());
 		glfwPollEvents();

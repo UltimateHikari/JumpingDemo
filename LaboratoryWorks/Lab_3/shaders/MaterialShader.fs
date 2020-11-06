@@ -48,7 +48,7 @@ void main(){
 	vec3 viewDirection = normalize(viewPosition - fPosition);
 	vec3 rawTexture = vec3(texture(material.texture_diffuse1, fTexCoords));
 
-	vec3 resultingColor = vec3(0,0,0);
+	vec3 resultingColor = vec3(0.0);
 	for(int i = 0; i < actualPointLights; i++){
 		resultingColor += processPointLight(pointLights[i], normal, fPosition, viewDirection, rawTexture);
 	}

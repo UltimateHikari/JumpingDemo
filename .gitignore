@@ -10,7 +10,6 @@
 *.exe
 *.sdf
 *.suo
-*.vs
 *.user
 settings.json
 bazel-*

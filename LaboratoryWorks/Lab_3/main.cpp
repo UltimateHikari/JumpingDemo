@@ -21,7 +21,6 @@ using namespace glm;
 
 int main( void ){
 	Window w(1024,768);
-	//glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
 	Shader shader(
 		"../shaders/MaterialShader.vs", 
@@ -76,8 +75,7 @@ int main( void ){
 			translate(mat4(1.0f), vec3(0.0f,2.0f,0.0f))); 
 
 		shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
-		shader.setFloat("material.shininess", 32.0f);
-
+		shader.setFloat("material.shininess", 64.0f);
 		shader.setVec3("viewPosition", camera.getPosition());
 
 		model.Draw(shader);

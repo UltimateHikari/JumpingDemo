@@ -16,11 +16,6 @@ set(SRCS
     main.cpp
     )
 
-set(SHADERS
-    shaders/FShader.fragmentshader
-    shaders/VShader.vertexshader
-    )
-
-add_executable(lab3 ${SRCS} ${SHADERS})
+add_executable(lab3 ${SRCS})
 target_include_directories(lab3 PUBLIC engine)
 target_link_libraries(lab3 ${ALL_LIBS} MyEngine)

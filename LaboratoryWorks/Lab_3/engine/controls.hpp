@@ -3,9 +3,10 @@
 
 class CameraEntity{
     public:
-        virtual void computeMatricesFromInputs(GLFWwindow* window) = 0;
+        virtual void computeMatricesFromInputs(GLFWwindow* window, float deltaTime) = 0;
         virtual glm::mat4 getViewMatrix() const = 0;
         virtual glm::mat4 getProjectionMatrix() const = 0;
+        virtual glm::vec3 getPosition() const = 0;
 };
 
 class FreeCamera : public CameraEntity{
@@ -25,7 +26,7 @@ class FreeCamera : public CameraEntity{
             float hAngle,
             float vAngle
             );
-        void computeMatricesFromInputs(GLFWwindow* window);
+        void computeMatricesFromInputs(GLFWwindow* window, float deltaTime);
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
         glm::vec3 getPosition() const;

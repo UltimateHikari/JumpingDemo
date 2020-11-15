@@ -43,12 +43,9 @@ FreeCamera::FreeCamera(
 
 
 
-void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window){
+void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window, float deltaTime){
 	//int w_height, w_width; //TODO: Implement Window wrapper
 	//glfwGetWindowSize(window, w_width, w_height)
-	static double lastTime = glfwGetTime();
-	double currentTime = glfwGetTime();
-	float deltaTime = static_cast<float>(currentTime - lastTime);
 
 	// Mouse position
 	double xpos, ypos;
@@ -88,5 +85,4 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window){
 	}
 	//std::cerr << to_string(direction) << std::endl;
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
-	lastTime = currentTime;
 }

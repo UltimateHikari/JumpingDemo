@@ -70,7 +70,7 @@ void Model :: Draw(Shader& shader){
         meshes[i].Draw(shader);
 }
 
- void Model :: loadModel(string const& path)
+ void Model :: loadModel(const string& path)
 {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);

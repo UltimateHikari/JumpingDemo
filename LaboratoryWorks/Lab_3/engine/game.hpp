@@ -38,11 +38,12 @@ public:
         GLuint shaderID_,
         float scale_
     ): model(model_), shaderID(shaderID_), scale_arg(scale_){};
+    virtual ~Entity();
     virtual void render();
     GLuint getShaderID() const;
 };
 
-class LightEntity: public Entity{ //for future moving light-entites;
+class LightEntity: public Entity{ //for future moving light-entities;
 private:                        // now is simple entity
     std::shared_ptr<Light> light;
 public:
@@ -72,17 +73,17 @@ public:
 
 class World{
 private:
-    std::vector<Entity> entities;
+    std::vector<std::shared_ptr<Entity> > entities;
 public:
-    World();
+    World() = default;
     void update(float deltaTime);
     void render();
-    void spawnEntity(Entity&& entity);
+    void addEntity(std::shared_ptr<Entity> entity);
 };
 
 class Game{
 private:
-    std::vector<CameraEntity> cameras;
+    std::vector<std::unique_ptr<CameraEntity> > cameras;
     World world;
     Window& window;
     GLuint current_camera_index;

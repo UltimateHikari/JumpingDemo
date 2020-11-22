@@ -7,6 +7,7 @@ class CameraEntity{
         virtual glm::mat4 getViewMatrix() const = 0;
         virtual glm::mat4 getProjectionMatrix() const = 0;
         virtual glm::vec3 getPosition() const = 0;
+        virtual ~CameraEntity(){};
 };
 
 class FreeCamera : public CameraEntity{
@@ -21,6 +22,7 @@ class FreeCamera : public CameraEntity{
         float FoV;
     public:
         FreeCamera();
+        ~FreeCamera(){};
         FreeCamera(
             glm::vec3 position_, 
             float hAngle,

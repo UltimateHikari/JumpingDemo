@@ -1,8 +1,12 @@
 #include "game.hpp"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <fstream>
 
 using namespace glm;
+
+const std::string SHADER_PATH = "../shaders/";
+const std::string MODEL_PATH = "../resources/";
 
 void Entity :: render(){
     Shader& shader = ResourceManager::getInstance().getShader(shaderID);
@@ -38,29 +42,58 @@ ResourceManager& ResourceManager :: getInstance(){
     return manager;
 }
 
-// void ResourceManager :: loadResources(const std::string& config_file_path){
-
-// }
+void ResourceManager :: loadResources(const std::string& config_file_path){
+    std::ifstream fin(config_file_path);
+    if(!fin.is_open()){
+        std::cerr << "error opening resourcemanagerconfig\n";
+        return;
+    }
+    int shaders_count, models_count;
+    std::string buffer_string;
+    fin >> shaders_count >> models_count;
+    for(int i = 0; i < shaders_count; ++i){
+        fin >> buffer_string;
+        shaders.push_back(Shader(
+            (SHADER_PATH + buffer_string + ".vs").c_str(),
+            (SHADER_PATH + buffer_string + ".fs").c_str()
+            ));
+    }
+    for(int i = 0; i < models_count; ++i){
+        fin >> buffer_string;
+        models.push_back(
+            std::shared_ptr<Model>(new Model(MODEL_PATH + buffer_string))
+        );
+    }
+}
 
 void World :: update(float deltaTime){
-    for(auto i : entities){
-        i.update(deltaTime);
+    for(int i = 0; i < entities.size(); ++i){
+        entities[i]->update(deltaTime);
     }
 }
 
 void World :: render(){
-    for(auto i : entities){
-        i.render();
+    ResourceManager& instance = ResourceManager::getInstance();
+    int lights = instance.getLightsAmount();
+    for(int i = 0; i < entities.size(); ++i){
+        //excessive lightplacing (repeating shaders)
+        Shader& shader = instance.getShader(entities[i]->getShaderID());
+        for(int j = 0; j < lights; ++j){
+            instance.getLight(j)->place(shader);
+        }
+        shader.finalizeLight();
+
+        entities[i]->render();
     }
 }
 
-void World :: spawnEntity(Entity && entity){
-    entities.push_back(std::move(entity));
+void World :: addEntity(std::shared_ptr<Entity> entity){
+    entities.push_back(entity);
 }
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     ResourceManager::getInstance().loadResources("../resource_config");
-    cameras.push_back(FreeCamera());
+    cameras.push_back(std::unique_ptr<CameraEntity>(new FreeCamera));
     //well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -83,26 +116,14 @@ void Game :: update(){
      * here should be some accumulator stuff for reactphysics3d
      * 'cause it wants fixed time intervals for updates 
      */
-    cameras[current_camera_index].computeMatricesFromInputs(window.getWindow(), deltaTime);
+    cameras[current_camera_index]->computeMatricesFromInputs(window.getWindow(), deltaTime);
 
-    for(auto i : world.entities){
-        i.update(deltaTime);
-    }
+    world.update(deltaTime);
 
     lastTime = currentTime;
 }
 
 void Game :: render(){
-    ResourceManager& instance = ResourceManager::getInstance();
-    int lights = instance.getLightsAmount();
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    for(auto i : world.entities){
-        //excessive lightplacing (repeating shaders)
-        Shader& shader = instance.getShader(i.getShaderID());
-        for(int j = 0; j < lights; ++j){
-            instance.getLight(j)->place(shader);
-        }
-        shader.finalizeLight();
-        i.render();
-    }
+    world.render();
 }

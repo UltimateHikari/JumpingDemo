@@ -1,6 +1,8 @@
-2 3
+2 3 2
 MaterialShader
 LightShader
 checkedCube.obj
 scene.obj
 lamp.obj
+4.0 4.0 2.0
+-4.0 6.0 -10.0

@@ -23,6 +23,7 @@ FadingLight :: FadingLight(
     ): Light(colors_, lightVector_)
 {
     //haha tricked ya, have only one distance for now
+    std::cerr << "fade constr\n";
     constants = LightConstants(1.0, 0.09, 0.0032);
 }
 
@@ -41,7 +42,7 @@ PointLight :: PointLight(
     glm::vec3 lightVector_,
     float distance 
     ): FadingLight(colors_, lightVector_, distance)
-{}
+{std::cerr << "point constr\n";}
 
 void PointLight :: place(Shader& shader){
     GLuint lightIndex = shader.getBoundLights();
@@ -57,6 +58,9 @@ void PointLight :: place(Shader& shader){
     shader.setFloat(prefix + "quad", getQuad());
 
     shader.BindLight();
+
+        std::cerr << "point placed " + std::to_string(lightIndex) + "\n";
+
 };
 
 DefaultLamp :: DefaultLamp(vec3 position):
@@ -69,4 +73,4 @@ DefaultLamp :: DefaultLamp(vec3 position):
         position,
         50.0
     )
-{}
+{std::cerr << "default constructed\n";}

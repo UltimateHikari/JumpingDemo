@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include "shader.hpp"
+#include <iostream>
 
 struct LightColors{
     glm::vec3 ambient;
@@ -36,8 +37,8 @@ public:
     Light(
         LightColors colors_,
         glm::vec3 lightVector_
-        ): colors(colors_), lightVector(lightVector_){};
-    virtual ~Light() = default;
+        ): colors(colors_), lightVector(lightVector_){std::cerr<<"light constr\n";};
+    virtual ~Light(){std::cerr << "light\n";};
     virtual void place(Shader& shader) = 0;
     const glm::vec3& getAmbient() const;
     const glm::vec3& getDiffuse() const;
@@ -54,7 +55,7 @@ public:
         glm::vec3 lightVector_,
         float distance //fetching constants based on closed pre-calculated distance
         );
-    ~FadingLight();
+    ~FadingLight(){std::cerr << "fading\n";};
     float getConstant() const;
     float getLinear() const;
     float getQuad() const;
@@ -67,12 +68,13 @@ public:
         glm::vec3 lightVector_,
         float distance
         );
-    ~PointLight();
+    ~PointLight(){std::cerr << "point\n";};
     void place(Shader& shader);
 };
 class DefaultLamp : public PointLight{
 public:
     DefaultLamp(glm::vec3 position);
+    ~DefaultLamp(){std::cerr << "default\n";};
 };
 // class DirectionalLight : public Light{};
 // class SpotLight : public Light{};

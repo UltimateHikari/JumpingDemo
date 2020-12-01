@@ -23,7 +23,7 @@ private:
     glm::vec3 position;
 public:
     PhysicalObject(): position(0.0f, 0.0f, 0.0f){};
-    virtual glm::vec3 getPosition() = 0;
+    virtual glm::vec3 getPosition(){return position;};
     virtual void update(float deltaTime) = 0;
 };
 
@@ -38,8 +38,14 @@ public:
         GLuint shaderID_,
         float scale_
     ): model(model_), shaderID(shaderID_), scale_arg(scale_){};
-    virtual ~Entity();
+    Entity(
+        GLuint model_res_id,
+        GLuint shader_res_id,
+        float scale_
+    );
+    virtual ~Entity() = default;
     virtual void render();
+    virtual void update(float deltaTime){};
     GLuint getShaderID() const;
 };
 
@@ -53,6 +59,7 @@ public:
         float scale_,
         std::shared_ptr<Light> light_
     ): Entity(model_, shaderID_, scale_), light(light_){};
+    virtual ~LightEntity() = default;
     //void update(float deltaTime) 
 };
 

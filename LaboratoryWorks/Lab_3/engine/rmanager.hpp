@@ -25,6 +25,7 @@ public:
     void loadResources(const std::string& config_file_path);
     std::shared_ptr<Model> getModel(GLuint modelID) const;
     std::shared_ptr<Light> getLight(GLuint lightID) const;
+    GLuint getShadersAmount() const;
     GLuint getLightsAmount() const;
     Shader& getShader(GLuint shaderID);
 };

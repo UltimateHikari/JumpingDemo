@@ -38,7 +38,7 @@ public:
         LightColors colors_,
         glm::vec3 lightVector_
         ): colors(colors_), lightVector(lightVector_){std::cerr<<"light constr\n";};
-    virtual ~Light(){std::cerr << "light\n";};
+    virtual ~Light() = default;
     virtual void place(Shader& shader) = 0;
     const glm::vec3& getAmbient() const;
     const glm::vec3& getDiffuse() const;
@@ -55,7 +55,7 @@ public:
         glm::vec3 lightVector_,
         float distance //fetching constants based on closed pre-calculated distance
         );
-    ~FadingLight(){std::cerr << "fading\n";};
+    ~FadingLight() = default;
     float getConstant() const;
     float getLinear() const;
     float getQuad() const;
@@ -68,13 +68,13 @@ public:
         glm::vec3 lightVector_,
         float distance
         );
-    ~PointLight(){std::cerr << "point\n";};
+    ~PointLight() = default;
     void place(Shader& shader);
 };
 class DefaultLamp : public PointLight{
 public:
     DefaultLamp(glm::vec3 position);
-    ~DefaultLamp(){std::cerr << "default\n";};
+    ~DefaultLamp() = default;
 };
 // class DirectionalLight : public Light{};
 // class SpotLight : public Light{};

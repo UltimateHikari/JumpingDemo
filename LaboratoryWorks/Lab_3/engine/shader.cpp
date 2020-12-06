@@ -14,7 +14,8 @@ using namespace std;
 
 #include "shader.hpp"
 
-Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path): boundLights(0){
+Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path, std::string& type_): boundLights(0){
+	type = type;
 
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);

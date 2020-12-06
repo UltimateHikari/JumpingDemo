@@ -27,6 +27,10 @@ std::shared_ptr<Light> ResourceManager :: getLight(GLuint lightID) const
     return lights[lightID];
 }
 
+GLuint ResourceManager :: getShadersAmount() const{
+    return shaders.size();
+}
+
 GLuint ResourceManager :: getLightsAmount() const{
     return lights.size();
 }
@@ -45,13 +49,14 @@ void ResourceManager :: loadResources(const std::string& config_file_path)
     }
     int shaders_count, models_count, lights_count; 
     float x,y,z;
-    std::string buffer_string;
+    std::string buffer_string, type_string;
     fin >> shaders_count >> models_count >> lights_count;
     for(int i = 0; i < shaders_count; ++i){
-        fin >> buffer_string;
+        fin >> buffer_string >> type_string;
         shaders.push_back(Shader(
             (SHADER_PATH + buffer_string + ".vs").c_str(),
-            (SHADER_PATH + buffer_string + ".fs").c_str()
+            (SHADER_PATH + buffer_string + ".fs").c_str(),
+            type_string
             ));
     }
     for(int i = 0; i < models_count; ++i){

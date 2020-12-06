@@ -1,6 +1,6 @@
 2 3 2
-MaterialShader
-LightShader
+MaterialShader material
+LightShader light
 checkedCube.obj
 scene.obj
 lamp.obj

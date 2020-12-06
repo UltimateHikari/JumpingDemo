@@ -16,14 +16,15 @@ using namespace glm;
 #include "model.hpp"
 #include "light.hpp"
 
-#include "game.hpp"
+#include "rmanager.hpp"
 
 #include <glm/gtx/string_cast.hpp>
 
 
 int main( void ){
 	Window w(1024,768);
-	Game game(w);
+	ResourceManager manager;
+	manager.loadResources("../resource_config");
 	Shader shader(
 		"../shaders/MaterialShader.vs", 
 		"../shaders/MaterialShader.fs"
@@ -34,15 +35,15 @@ int main( void ){
 		"../shaders/LightShader.fs"
 		);
 
-	Model model(
-		"../resources/checkedCube.obj"
-		);
-	Model scene(
-		"../resources/scene.obj"
-		);
-	Model lampModel(
-		"../resources/lamp.obj"
-		);
+	// Model model(
+	// 	"../resources/checkedCube.obj"
+	// 	);
+	// Model scene(
+	// 	"../resources/scene.obj"
+	// 	);
+	// Model lampModel(
+	// 	"../resources/lamp.obj"
+	// 	);
 
 	DefaultLamp lamp(vec3(4.0f,4.0f,2.0f));
 	DefaultLamp lamp2(vec3(-4.0f,6.0f,-10.0f));
@@ -66,8 +67,6 @@ int main( void ){
 	shader.finalizeLight();
 
 	do{
-		// game.update();
-		// game.render();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.use();
@@ -82,12 +81,12 @@ int main( void ){
 		shader.setFloat("material.shininess", 64.0f);
 		shader.setVec3("viewPosition", camera.getPosition());
 
-		model.Draw(shader);
+		ResourceManager::instance().getModel(0)->Draw(shader);
 
 		shader.setMat4("model", 
 			scale(mat4(1.0f), vec3(40.0f)));
 
-		scene.Draw(shader);
+		ResourceManager::instance().getModel(1)->Draw(shader);
 
 		lightShader.use();
 		lightShader.setMat4("projection", camera.getProjectionMatrix());
@@ -95,11 +94,11 @@ int main( void ){
 		lightShader.setMat4("model", 
 			translate(mat4(1.0f), vec3(4.0f,4.0f,2.0f))
 			*scale(mat4(1.0f), vec3(0.5f)));
-		lampModel.Draw(lightShader);
+		ResourceManager::instance().getModel(2)->Draw(lightShader);
 		lightShader.setMat4("model", 
 			translate(mat4(1.0f), vec3(-4.0f,6.0f,-10.0f))
 			*scale(mat4(1.0f), vec3(0.5f)));
-		lampModel.Draw(lightShader);
+		ResourceManager::instance().getModel(2)->Draw(lightShader);
 
 		glfwSwapBuffers(w.getWindow());
 		glfwPollEvents();

@@ -63,21 +63,6 @@ public:
     //void update(float deltaTime) 
 };
 
-class ResourceManager {
-private:
-    std::vector< std::shared_ptr<Model> > models;
-    std::vector< std::shared_ptr<Light> > lights;
-    std::vector< Shader > shaders;
-    ResourceManager(){};
-public:
-    static ResourceManager & getInstance();
-    void loadResources(const std::string& config_file_path);
-    std::shared_ptr<Model> getModel(GLuint modelID) const;
-    std::shared_ptr<Light> getLight(GLuint lightID) const;
-    GLuint getLightsAmount() const;
-    Shader& getShader(GLuint shaderID);
-};
-
 class World{
 private:
     std::vector<std::shared_ptr<Entity> > entities;

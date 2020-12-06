@@ -6,6 +6,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <bitset>
 
 #include "rmanager.hpp"
 #include "model.hpp"
@@ -29,15 +30,9 @@ private:
     glm::vec3 axis;
     float angle;
 protected:
-    void setPosition(glm::vec3 position_){
-        position = position_;
-    }
-    void setAngle(float angle_){
-        angle = angle_;
-    }
-    void setAxis(glm::vec3 axis_){
-        axis = axis_;
-    }
+    void setPosition(glm::vec3 position_){ position = position_; }
+    void setAngle(float angle_){ angle = angle_; }
+    void setAxis(glm::vec3 axis_){ axis = axis_; }
 public:
     PhysicalObject(): 
         position(0.0f, 0.0f, 0.0f),
@@ -48,6 +43,10 @@ public:
     glm::vec3 getAxis(){return axis;};
     float getAngle(){return angle;}
     virtual void update(float deltaTime) = 0;
+    virtual void onForward(){}
+    virtual void onBack(){}
+    virtual void onRight(){}
+    virtual void onLeft(){}
 };
 
 class StaticObject : public PhysicalObject{
@@ -105,6 +104,49 @@ public:
     }
 };
 
+class PlayerControlledObject : public PhysicalObject{
+private:
+    float speed;
+    glm::vec3 direction;
+    std::bitset<4> move_flags;
+public:
+    PlayerControlledObject(glm::vec3 position_): speed(3.0f), direction(glm::vec3(0.0)){
+        setPosition(position_);
+    }
+    void update(float deltaTime){
+        direction = glm::vec3(0.0f);
+        float angle = getAngle();
+        if(move_flags[0]){
+            direction += glm::rotate(glm::vec3(1.0,0.0,0.0), angle, glm::vec3(0.0,1.0,0.0));
+        }
+        if(move_flags[1]){
+            direction += glm::rotate(glm::vec3(-1.0,0.0,0.0), angle, glm::vec3(0.0,1.0,0.0));
+        }
+        if(move_flags[2]){
+            angle += speed*deltaTime;
+        }
+        if(move_flags[3]){
+            angle -= speed*deltaTime;
+        }
+        angle = fmod(angle, 6.28);
+        setAngle(angle);
+        setPosition(getPosition() + direction*speed*deltaTime);
+        move_flags.reset();
+    }
+    void onForward(){
+        move_flags[0] = true;
+    }
+    void onBack(){
+        move_flags[1] = true;
+    }
+    void onRight(){
+        move_flags[2] = true;
+    }
+    void onLeft(){
+        move_flags[3] = true;
+    }
+};
+
 class Entity : public GraphicObject{
 private:
     std::shared_ptr<Model> model;
@@ -127,6 +169,10 @@ public:
     virtual ~Entity() = default;
     virtual void render();
     void update(float deltaTime);
+    void onForward(){object->onForward();};
+    void onBack(){object->onBack();};
+    void onRight(){object->onRight();};
+    void onLeft(){object->onLeft();};
 };
 
 // class LightEntity: public Entity{ //for future moving light-entities;
@@ -153,6 +199,7 @@ public:
     void prerender();
     void render();
     void addEntity(std::shared_ptr<Entity> entity);
+    std::shared_ptr<Entity> getPlayerEntity(GLuint index);
 };
 
 class Game{

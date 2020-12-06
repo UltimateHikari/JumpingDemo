@@ -64,7 +64,10 @@ void World :: prerender(){
     shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f)); //need to move into resources
     shader.setFloat("material.shininess", 64.0f);   //and this
     shader.finalizeLight();
+}
 
+std::shared_ptr<Entity> World :: getPlayerEntity(GLuint index){
+    return entities[index];
 }
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
@@ -90,7 +93,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
             vec3(0.0f,2.0f,0.0f),
             vec3(0.1f,1.0f,0.0f),
             4.0f, 2.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,vec3(0.0f,1.0f,0.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new PlayerControlledObject(vec3(0.0f,1.0f,0.0f))));
     world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
@@ -99,15 +102,27 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
 
 void Game :: use_events(){
     if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
-        cameras[current_camera_index]->onUp();
+        world.getPlayerEntity(2)->onForward();
     }
     if(glfwGetKey( window.getWindow(), GLFW_KEY_S ) == GLFW_PRESS){
-        cameras[current_camera_index]->onDown();
+        world.getPlayerEntity(2)->onBack();
     }
     if(glfwGetKey( window.getWindow(), GLFW_KEY_D ) == GLFW_PRESS){
-        cameras[current_camera_index]->onRight();
+        world.getPlayerEntity(2)->onRight();
     }
     if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
+        world.getPlayerEntity(2)->onLeft();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_UP ) == GLFW_PRESS){
+        cameras[current_camera_index]->onUp();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_DOWN ) == GLFW_PRESS){
+        cameras[current_camera_index]->onDown();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_RIGHT ) == GLFW_PRESS){
+        cameras[current_camera_index]->onRight();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_LEFT ) == GLFW_PRESS){
         cameras[current_camera_index]->onLeft();
     }
 }

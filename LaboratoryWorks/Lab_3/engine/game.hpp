@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "rmanager.hpp"
 #include "model.hpp"
 #include "shader.hpp"
 #include "controls.hpp"
@@ -30,23 +31,22 @@ public:
 class Entity : public GraphicObject, public PhysicalObject{
 private:
     std::shared_ptr<Model> model;
-    GLuint shaderID;
+    Shader& shader;
     float scale_arg;
 public:
     Entity(
         std::shared_ptr<Model> model_,
-        GLuint shaderID_,
+        Shader& shader_,
         float scale_
-    ): model(model_), shaderID(shaderID_), scale_arg(scale_){};
+    ): model(model_), shader(shader_), scale_arg(scale_){};
     Entity(
-        GLuint model_res_id,
-        GLuint shader_res_id,
+        GLuint model_id,
+        GLuint shader_id,
         float scale_
     );
     virtual ~Entity() = default;
     virtual void render();
     virtual void update(float deltaTime){};
-    GLuint getShaderID() const;
 };
 
 class LightEntity: public Entity{ //for future moving light-entities;
@@ -55,10 +55,10 @@ private:                        // now is simple entity
 public:
     LightEntity(
         std::shared_ptr<Model> model_,
-        GLuint shaderID_,
+        Shader& shader_,
         float scale_,
         std::shared_ptr<Light> light_
-    ): Entity(model_, shaderID_, scale_), light(light_){};
+    ): Entity(model_, shader_, scale_), light(light_){};
     virtual ~LightEntity() = default;
     //void update(float deltaTime) 
 };

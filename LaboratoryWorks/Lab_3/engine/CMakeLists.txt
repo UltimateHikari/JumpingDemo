@@ -5,6 +5,7 @@ set(ENGINE_SRCS
     window.cpp
     stb_image.cpp
     light.cpp
+    game.cpp
     rmanager.cpp
     )
 

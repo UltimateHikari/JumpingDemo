@@ -10,13 +10,12 @@ Entity :: Entity(
         GLuint shader_res_id,
         float scale_
     ): Entity(
-        ResourceManager::getInstance().getModel(model_res_id),
-        ResourceManager::getInstance().getShader(shader_res_id).getID(),
+        ResourceManager::instance().getModel(model_res_id),
+        ResourceManager::instance().getShader(shader_res_id),
         scale_
     ){}
 
 void Entity :: render(){
-    Shader& shader = ResourceManager::getInstance().getShader(shaderID);
     shader.use();
     shader.setMat4("model", mat4(1.0f));
     // shader.setMat4("model", 
@@ -25,10 +24,6 @@ void Entity :: render(){
 
     //std::cerr << "rendered to " << shader.getID() << std::endl;
     model->Draw(shader);
-}
-
-GLuint Entity :: getShaderID() const{
-    return shaderID;
 }
 
 void World :: update(float deltaTime){
@@ -47,20 +42,23 @@ void World :: addEntity(std::shared_ptr<Entity> entity){
     entities.push_back(entity);
 }
 void World :: prerender(){
-    ResourceManager& instance = ResourceManager::getInstance();
+    ResourceManager& instance = ResourceManager::instance();
     int lights = instance.getLightsAmount();
+    std::cerr << "placing lights: " << lights << std::endl;
     //excessive lightplacing (repeating shaders) and now only one
-        Shader& shader = instance.getShader(entities[0]->getShaderID());
-        shader.use();
-        for(int j = 0; j < lights; ++j){
-            instance.getLight(j)->place(shader);
-        }
-        shader.finalizeLight();
+    Shader& shader = instance.getShader(0);
+    shader.use();
+    for(int j = 0; j < lights; ++j){
+        instance.getLight(j)->place(shader);
+    }
+    shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
+    shader.setFloat("material.shininess", 64.0f);
+    shader.finalizeLight();
 
 }
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
-    ResourceManager::getInstance().loadResources("../resource_config");
+    ResourceManager::instance().loadResources("../resource_config");
     cameras.push_back(std::unique_ptr<CameraEntity>(new FreeCamera));
     //well, depth-test
 	glEnable(GL_DEPTH_TEST);
@@ -87,6 +85,10 @@ void Game :: update(){
      * 'cause it wants fixed time intervals for updates 
      */
     cameras[current_camera_index]->computeMatricesFromInputs(window.getWindow(), deltaTime);
+    Shader& shader = ResourceManager::instance().getShader(0);
+    shader.setMat4("projection", cameras[current_camera_index]->getProjectionMatrix());
+	shader.setMat4("view", cameras[current_camera_index]->getViewMatrix());
+    shader.setVec3("viewPosition", cameras[current_camera_index]->getPosition());
 
     world.update(deltaTime);
 

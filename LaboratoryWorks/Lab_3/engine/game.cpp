@@ -26,8 +26,7 @@ void Entity :: render(){
 	// 		translate(mat4(1.0f), getPosition())
 	// 		*scale(mat4(1.0f), vec3(scale_arg)));
 
-    //std::cerr << "rendered"<< std::endl;
-
+    //std::cerr << "rendered to " << shader.getID() << std::endl;
     model->Draw(shader);
 }
 
@@ -85,10 +84,10 @@ void ResourceManager :: loadResources(const std::string& config_file_path){
         );
     }
 
-    /*for(auto i:shaders){
+    for(auto i:shaders){
         std::cerr << i.getID() << " ";
     }
-    std::cerr << std::endl;*/
+    std::cerr << std::endl;
 }
 
 void World :: update(float deltaTime){
@@ -98,23 +97,25 @@ void World :: update(float deltaTime){
 }
 
 void World :: render(){
-    ResourceManager& instance = ResourceManager::getInstance();
-    int lights = instance.getLightsAmount();
     for(int i = 0; i < entities.size(); ++i){
-        //excessive lightplacing (repeating shaders)
-        Shader& shader = instance.getShader(entities[i]->getShaderID());
-        shader.use();
-        for(int j = 0; j < lights; ++j){
-            instance.getLight(j)->place(shader);
-        }
-        shader.finalizeLight();
-
         entities[i]->render();
     }
 }
 
 void World :: addEntity(std::shared_ptr<Entity> entity){
     entities.push_back(entity);
+}
+void World :: prerender(){
+    ResourceManager& instance = ResourceManager::getInstance();
+    int lights = instance.getLightsAmount();
+    //excessive lightplacing (repeating shaders) and now only one
+        Shader& shader = instance.getShader(entities[0]->getShaderID());
+        shader.use();
+        for(int j = 0; j < lights; ++j){
+            instance.getLight(j)->place(shader);
+        }
+        shader.finalizeLight();
+
 }
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
@@ -133,6 +134,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * sceneLoader?
      */
     world.addEntity(std::make_shared<Entity>(0,0,1));
+    world.prerender();
 }
 
 void Game :: update(){

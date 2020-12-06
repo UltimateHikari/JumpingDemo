@@ -45,6 +45,7 @@ PointLight :: PointLight(
 {std::cerr << "point constr\n";}
 
 void PointLight :: place(Shader& shader){
+    //for dynamic lights rework needed i feel
     GLuint lightIndex = shader.getBoundLights();
     std::string prefix = "pointLights[" + std::to_string(lightIndex) + "].";
     
@@ -59,7 +60,7 @@ void PointLight :: place(Shader& shader){
 
     shader.BindLight();
 
-        std::cerr << "point placed " + std::to_string(lightIndex) + "\n";
+        std::cerr << "point placed " + std::to_string(lightIndex) + " to " << shader.getID() << "\n";
 
 };
 

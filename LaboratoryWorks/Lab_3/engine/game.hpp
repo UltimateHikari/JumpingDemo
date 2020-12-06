@@ -84,6 +84,7 @@ private:
 public:
     World() = default;
     void update(float deltaTime);
+    void prerender();
     void render();
     void addEntity(std::shared_ptr<Entity> entity);
 };

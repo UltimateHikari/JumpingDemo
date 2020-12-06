@@ -6,23 +6,32 @@
 using namespace glm;
 
 Entity :: Entity(
-        GLuint model_res_id,
-        GLuint shader_res_id,
-        float scale_
-    ): Entity(
-        ResourceManager::instance().getModel(model_res_id),
-        ResourceManager::instance().getShader(shader_res_id),
-        scale_
-    ){}
+    GLuint model_id,
+    GLuint shader_id,
+    float scale_,
+    PhysicalObject * object_
+):  object(std::unique_ptr<PhysicalObject>(object_)), 
+    model(ResourceManager::instance().getModel(model_id)),
+    shader(ResourceManager::instance().getShader(shader_id)),
+    scale_arg(scale_){}
+
+Entity :: Entity(
+        GLuint model_id,
+        GLuint shader_id,
+        float scale_,
+        vec3 position
+    ): Entity(model_id, shader_id, scale_, new StaticObject(position)){}
+
+void Entity :: update(float deltaTime){
+    object->update(deltaTime);
+}
 
 void Entity :: render(){
     shader.use();
-    shader.setMat4("model", mat4(1.0f));
-    // shader.setMat4("model", 
-	// 		translate(mat4(1.0f), getPosition())
-	// 		*scale(mat4(1.0f), vec3(scale_arg)));
-
-    //std::cerr << "rendered to " << shader.getID() << std::endl;
+    //shader.setMat4("model", mat4(1.0f));
+    shader.setMat4("model", 
+			translate(mat4(1.0f), object->getPosition())
+			*scale(mat4(1.0f), vec3(scale_arg)));
     model->Draw(shader);
 }
 
@@ -51,8 +60,8 @@ void World :: prerender(){
     for(int j = 0; j < lights; ++j){
         instance.getLight(j)->place(shader);
     }
-    shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f));
-    shader.setFloat("material.shininess", 64.0f);
+    shader.setVec3("material.specular", vec3(0.5f,0.5f,0.5f)); //need to move into resources
+    shader.setFloat("material.shininess", 64.0f);   //and this
     shader.finalizeLight();
 
 }
@@ -72,7 +81,10 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    world.addEntity(std::make_shared<Entity>(0,0,1));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new MovingObject(vec3(0.0f,2.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
+    //world.addEntity(std::make_shared<Entity>(2,1,1, vec3(4.0f, 4.0f, 2.0f)));
+    //world.addEntity(std::make_shared<Entity>(2,1,1, vec3(-4.0f, 6.0f, -10.0f)));
     world.prerender();
 }
 

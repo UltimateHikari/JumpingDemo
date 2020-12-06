@@ -14,6 +14,9 @@
 #include "window.hpp"
 #include "light.hpp"
 
+#include <glm/gtx/string_cast.hpp>
+
+
 class GraphicObject{
 public:
     virtual void render() = 0;
@@ -22,46 +25,73 @@ public:
 class PhysicalObject{
 private:
     glm::vec3 position;
+protected:
+    void setPosition(glm::vec3 position_){
+        
+        position = position_;
+    }
 public:
     PhysicalObject(): position(0.0f, 0.0f, 0.0f){};
-    virtual glm::vec3 getPosition(){return position;};
+    glm::vec3 getPosition(){return position;};
     virtual void update(float deltaTime) = 0;
 };
 
-class Entity : public GraphicObject, public PhysicalObject{
+class StaticObject : public PhysicalObject{
+public:
+    StaticObject(glm::vec3 position_){
+        setPosition(position_);
+    }
+    void update(float deltaTime){}
+};
+
+class MovingObject : public PhysicalObject{
+public:
+    MovingObject(glm::vec3 position_){
+        setPosition(position_);
+    }
+    void update(float deltaTime){
+        setPosition(getPosition() += glm::vec3(deltaTime,0,0));
+    }
+};
+
+class Entity : public GraphicObject{
 private:
     std::shared_ptr<Model> model;
     Shader& shader;
     float scale_arg;
+    std::unique_ptr<PhysicalObject> object;
 public:
-    Entity(
-        std::shared_ptr<Model> model_,
-        Shader& shader_,
-        float scale_
-    ): model(model_), shader(shader_), scale_arg(scale_){};
     Entity(
         GLuint model_id,
         GLuint shader_id,
-        float scale_
+        float scale_,
+        PhysicalObject* object_
+    );
+    Entity(
+        GLuint model_id,
+        GLuint shader_id,
+        float scale_,
+        glm::vec3 position = glm::vec3()
     );
     virtual ~Entity() = default;
     virtual void render();
-    virtual void update(float deltaTime){};
+    void update(float deltaTime);
 };
 
-class LightEntity: public Entity{ //for future moving light-entities;
-private:                        // now is simple entity
-    std::shared_ptr<Light> light;
-public:
-    LightEntity(
-        std::shared_ptr<Model> model_,
-        Shader& shader_,
-        float scale_,
-        std::shared_ptr<Light> light_
-    ): Entity(model_, shader_, scale_), light(light_){};
-    virtual ~LightEntity() = default;
-    //void update(float deltaTime) 
-};
+// class LightEntity: public Entity{ //for future moving light-entities;
+// private:                        // now is simple entity
+//     std::shared_ptr<Light> light;
+// public:
+//     LightEntity(
+//         std::shared_ptr<Model> model_,
+//         Shader& shader_,
+//         float scale_,
+//         glm::vec3 position,
+//         std::shared_ptr<Light> light_
+//     ): Entity(model_, shader_, scale_, position), light(light_){};
+//     virtual ~LightEntity() = default;
+//     //void update(float deltaTime) 
+// };
 
 class World{
 private:

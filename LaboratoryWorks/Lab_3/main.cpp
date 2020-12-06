@@ -26,28 +26,7 @@ int main( void ){
 	Window w(1024,768);
 	ResourceManager manager;
 	Game game(w);
-	// manager.loadResources("../resource_config");
-
-	// Shader& shader = ResourceManager::instance().getShader(0);
-	// Shader& lightShader = ResourceManager::instance().getShader(1);
-
-	// //well, depth-test
-	// glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_LESS);
-	// // Cull triangles which normal is not towards the camera
-	// glEnable(GL_CULL_FACE);
-	// //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	// //Spawn some cameras
-	// FreeCamera camera;
-	// glfwSetCursorPos(w.getWindow(), 1024/2, 768/2); // TODO parameters
-
-	// shader.use();
-
-	// ResourceManager::instance().getLight(0)->place(shader);	
-	// ResourceManager::instance().getLight(1)->place(shader);
-	// shader.finalizeLight();
-
+	
 	do{
 		game.update();
 		game.render();

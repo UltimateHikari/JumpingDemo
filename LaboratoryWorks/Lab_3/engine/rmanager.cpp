@@ -36,7 +36,8 @@ Shader& ResourceManager :: getShader(GLuint shaderID)
     return shaders[shaderID];
 }
 
-void ResourceManager :: loadResources(const std::string& config_file_path){
+void ResourceManager :: loadResources(const std::string& config_file_path)
+{
     std::ifstream fin(config_file_path);
     if(!fin.is_open()){
         std::cerr << "error opening resourcemanagerconfig\n";
@@ -62,7 +63,7 @@ void ResourceManager :: loadResources(const std::string& config_file_path){
     for(int i = 0; i < lights_count; ++i){
         fin >> x >> y >> z;
         lights.push_back(
-            std::shared_ptr<Light>(new DefaultLamp(vec3(4.0f,4.0f,2.0f)))
+            std::shared_ptr<Light>(new DefaultLamp(vec3(x,y,z)))
         );
     }
 

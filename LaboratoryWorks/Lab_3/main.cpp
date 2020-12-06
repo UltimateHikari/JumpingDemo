@@ -25,27 +25,23 @@ int main( void ){
 	Window w(1024,768);
 	ResourceManager manager;
 	manager.loadResources("../resource_config");
-	Shader shader(
-		"../shaders/MaterialShader.vs", 
-		"../shaders/MaterialShader.fs"
-		);
 
-	Shader lightShader(
-		"../shaders/LightShader.vs", 
-		"../shaders/LightShader.fs"
-		);
-
-	// Model model(
-	// 	"../resources/checkedCube.obj"
-	// 	);
-	// Model scene(
-	// 	"../resources/scene.obj"
-	// 	);
-	// Model lampModel(
-	// 	"../resources/lamp.obj"
+	// Shader shader(
+	// 	"../shaders/MaterialShader.vs", 
+	// 	"../shaders/MaterialShader.fs"
 	// 	);
 
-	DefaultLamp lamp(vec3(4.0f,4.0f,2.0f));
+	// Shader lightShader(
+	// 	"../shaders/LightShader.vs", 
+	// 	"../shaders/LightShader.fs"
+	// 	);
+
+	Shader& shader = ResourceManager::instance().getShader(0);
+	Shader& lightShader = ResourceManager::instance().getShader(1);
+
+
+
+	// DefaultLamp lamp(vec3(4.0f,4.0f,2.0f));
 	DefaultLamp lamp2(vec3(-4.0f,6.0f,-10.0f));
 	
 
@@ -62,8 +58,8 @@ int main( void ){
 
 	shader.use();
 
-	lamp.place(shader);	
-	lamp2.place(shader);
+	ResourceManager::instance().getLight(0)->place(shader);	
+	ResourceManager::instance().getLight(1)->place(shader);
 	shader.finalizeLight();
 
 	do{

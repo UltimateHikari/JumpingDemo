@@ -82,11 +82,26 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    world.addEntity(std::make_shared<Entity>(0,0,1,new RotatingObject(vec3(0.0f,2.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(vec3(0.0f,2.0f,0.0f),4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
     world.prerender();
+}
+
+void Game :: use_events(){
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
+        cameras[current_camera_index]->onUp();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_S ) == GLFW_PRESS){
+        cameras[current_camera_index]->onDown();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_D ) == GLFW_PRESS){
+        cameras[current_camera_index]->onRight();
+    }
+    if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
+        cameras[current_camera_index]->onLeft();
+    }
 }
 
 void Game :: update(){

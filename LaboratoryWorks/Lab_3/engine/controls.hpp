@@ -1,5 +1,6 @@
 #ifndef CONTROLS_HPP
 #define CONTROLS_HPP
+#include <bitset>
 
 class CameraEntity{
     public:
@@ -8,6 +9,10 @@ class CameraEntity{
         virtual glm::mat4 getProjectionMatrix() const = 0;
         virtual glm::vec3 getPosition() const = 0;
         virtual ~CameraEntity(){};
+        virtual void onUp() = 0;
+        virtual void onDown() = 0;
+        virtual void onRight() = 0;
+        virtual void onLeft() = 0;
 };
 
 class FreeCamera : public CameraEntity{
@@ -20,6 +25,7 @@ class FreeCamera : public CameraEntity{
         float speed;
         float mouseSpeed;
         float FoV;
+        std::bitset<4> move_flags;
     public:
         FreeCamera();
         ~FreeCamera(){};
@@ -32,6 +38,10 @@ class FreeCamera : public CameraEntity{
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
         glm::vec3 getPosition() const;
+        void onUp();
+        void onDown();
+        void onRight();
+        void onLeft();
 };
 
 #endif

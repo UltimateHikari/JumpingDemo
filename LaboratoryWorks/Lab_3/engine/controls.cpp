@@ -70,19 +70,32 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window, float deltaTime
 	
 	up = glm::cross( right, direction );
 
-
-	if (glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS){
+	if (move_flags[0])
 		position += direction * deltaTime * speed;
-	}
-	if (glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS){
+	if (move_flags[1])
 		position -= direction * deltaTime * speed;
-	}
-	if (glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS){
+	if (move_flags[2])
 		position += right * deltaTime * speed;
-	}
-	if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
+	if (move_flags[3])
 		position -= right * deltaTime * speed;
-	}
+
+	move_flags.reset();
+
+	//glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS
+
 	//std::cerr << to_string(direction) << std::endl;
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
+}
+
+void FreeCamera :: onUp(){
+	move_flags[0] = true;
+}
+void FreeCamera :: onDown(){
+	move_flags[1] = true;
+}
+void FreeCamera :: onRight(){
+	move_flags[2] = true;
+}
+void FreeCamera :: onLeft(){
+	move_flags[3] = true;
 }

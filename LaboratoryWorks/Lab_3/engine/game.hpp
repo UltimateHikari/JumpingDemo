@@ -15,6 +15,7 @@
 #include "light.hpp"
 
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 
 class GraphicObject{
@@ -77,6 +78,25 @@ public:
     }
 };
 
+class CirculatingObject: public PhysicalObject{
+private:
+    glm::vec3 rvector;
+    glm::vec3 cvector;
+    float speed;
+public:
+    CirculatingObject(glm::vec3 position_, float radius, float speed_): 
+        cvector(position_), rvector(radius,0.0f,0.0f), speed(speed_){
+        setPosition(position_);
+    }
+    void update(float deltaTime){
+        float angle = getAngle();
+        angle += deltaTime*speed;
+        angle = fmod(angle,6.28f);
+        setAngle(angle);
+        setPosition(cvector + glm::rotate(rvector, angle, glm::vec3(0,1,0)));
+    }
+};
+
 class Entity : public GraphicObject{
 private:
     std::shared_ptr<Model> model;
@@ -135,6 +155,7 @@ private:
     GLuint current_camera_index;
 public:
     Game(Window& window_);
+    void use_events();
     void update();
     void render();
 };

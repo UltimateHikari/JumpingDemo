@@ -12,6 +12,7 @@ int main( void ){
 	Game game(w);
 
 	do{
+		game.use_events();
 		game.update();
 		game.render();
 		glfwSwapBuffers(w.getWindow());

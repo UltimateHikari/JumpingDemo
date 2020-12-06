@@ -31,6 +31,7 @@ void Entity :: render(){
     //shader.setMat4("model", mat4(1.0f));
     shader.setMat4("model", 
 			translate(mat4(1.0f), object->getPosition())
+            *rotate(mat4(1.0f), object->getAngle(), object->getAxis())
 			*scale(mat4(1.0f), vec3(scale_arg)));
     model->Draw(shader);
 }
@@ -81,7 +82,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    world.addEntity(std::make_shared<Entity>(0,0,1,new MovingObject(vec3(0.0f,2.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new RotatingObject(vec3(0.0f,2.0f,0.0f))));
     world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,1, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,1, vec3(-4.0f, 6.0f, -10.0f)));

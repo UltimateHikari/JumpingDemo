@@ -25,14 +25,24 @@ public:
 class PhysicalObject{
 private:
     glm::vec3 position;
+    glm::vec3 axis;
+    float angle;
 protected:
     void setPosition(glm::vec3 position_){
-        
         position = position_;
     }
+    void setAngle(float angle_){
+        angle = angle_;
+    }
 public:
-    PhysicalObject(): position(0.0f, 0.0f, 0.0f){};
+    PhysicalObject(): 
+        position(0.0f, 0.0f, 0.0f),
+        axis(0.0f,1.0f,0.0f), 
+        angle(0.0f)
+        {};
     glm::vec3 getPosition(){return position;};
+    glm::vec3 getAxis(){return axis;};
+    float getAngle(){return angle;}
     virtual void update(float deltaTime) = 0;
 };
 
@@ -51,6 +61,19 @@ public:
     }
     void update(float deltaTime){
         setPosition(getPosition() += glm::vec3(deltaTime,0,0));
+    }
+};
+
+class RotatingObject: public PhysicalObject{
+public:
+    RotatingObject(glm::vec3 position_){
+        setPosition(position_);
+    }
+    void update(float deltaTime){
+        float angle = getAngle();
+        angle += deltaTime;
+        angle = fmod(angle,6.28f);
+        setAngle(angle);
     }
 };
 

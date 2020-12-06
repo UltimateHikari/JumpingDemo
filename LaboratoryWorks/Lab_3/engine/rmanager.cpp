@@ -71,9 +71,4 @@ void ResourceManager :: loadResources(const std::string& config_file_path)
             std::shared_ptr<Light>(new DefaultLamp(vec3(x,y,z)))
         );
     }
-
-    for(auto i:shaders){
-        std::cerr << i.getID() << " ";
-    }
-    std::cerr << std::endl;
 }

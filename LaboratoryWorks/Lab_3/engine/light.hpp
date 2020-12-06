@@ -37,7 +37,7 @@ public:
     Light(
         LightColors colors_,
         glm::vec3 lightVector_
-        ): colors(colors_), lightVector(lightVector_){std::cerr<<"light constr\n";};
+        ): colors(colors_), lightVector(lightVector_){};
     virtual ~Light() = default;
     virtual void place(Shader& shader) = 0;
     const glm::vec3& getAmbient() const;

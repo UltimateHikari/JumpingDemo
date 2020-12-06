@@ -35,6 +35,9 @@ protected:
     void setAngle(float angle_){
         angle = angle_;
     }
+    void setAxis(glm::vec3 axis_){
+        axis = axis_;
+    }
 public:
     PhysicalObject(): 
         position(0.0f, 0.0f, 0.0f),
@@ -84,16 +87,21 @@ private:
     glm::vec3 cvector;
     float speed;
 public:
-    CirculatingObject(glm::vec3 position_, float radius, float speed_): 
-        cvector(position_), rvector(radius,0.0f,0.0f), speed(speed_){
+    CirculatingObject(glm::vec3 position_, glm::vec3 axis_, float radius, float speed_): 
+        cvector(position_), 
+        rvector(radius*glm::normalize(glm::cross(glm::normalize(axis_), glm::normalize(glm::vec3(1.0f,0.7f,0.0f))))), 
+        speed(speed_)
+    {
         setPosition(position_);
+        setAxis(axis_);
+        std::cerr << to_string(rvector) <<std::endl;
     }
     void update(float deltaTime){
         float angle = getAngle();
         angle += deltaTime*speed;
         angle = fmod(angle,6.28f);
         setAngle(angle);
-        setPosition(cvector + glm::rotate(rvector, angle, glm::vec3(0,1,0)));
+        setPosition(cvector + glm::rotate(rvector, angle, getAxis()));
     }
 };
 

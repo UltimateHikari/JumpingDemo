@@ -59,7 +59,7 @@ void PointLight :: place(Shader& shader){
 
     shader.BindLight();
 
-        std::cerr << "point placed " + std::to_string(lightIndex) + " to " << shader.getID() << "\n";
+        //std::cerr << "point placed " + std::to_string(lightIndex) + " to " << shader.getID() << "\n";
 
 };
 

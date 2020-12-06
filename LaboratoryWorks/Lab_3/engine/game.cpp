@@ -54,7 +54,7 @@ void World :: addEntity(std::shared_ptr<Entity> entity){
 void World :: prerender(){
     ResourceManager& instance = ResourceManager::instance();
     int lights = instance.getLightsAmount();
-    std::cerr << "placing lights: " << lights << std::endl;
+    //std::cerr << "placing lights: " << lights << std::endl;
     //excessive lightplacing (repeating shaders) and now only one
     Shader& shader = instance.getShader(0);
     shader.use();
@@ -82,7 +82,15 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(vec3(0.0f,2.0f,0.0f),4.0f, 2.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
+            vec3(-4.0f,2.0f,-4.0f),
+            vec3(1.0f,0.0f,0.0f),
+            4.0f, 2.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
+            vec3(0.0f,2.0f,0.0f),
+            vec3(0.1f,1.0f,0.0f),
+            4.0f, 2.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,vec3(0.0f,1.0f,0.0f)));
     world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));

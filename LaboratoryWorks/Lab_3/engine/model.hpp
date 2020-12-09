@@ -76,3 +76,15 @@ public:
         std::string typeName, 
         std::string directory);
 };
+
+class Skybox{
+private:
+    GLuint VAO, VBO; //vertex array/buffer
+    std::vector <float> vertices;
+    Shader& shader;
+    GLuint skyboxTexture;
+    void prepareSkybox();    
+public:
+    Skybox(std::vector<float> vertices_, Shader& shader_, GLuint skyboxTexture_);
+    void Draw();
+};

@@ -7,6 +7,7 @@ set(ENGINE_SRCS
     light.cpp
     game.cpp
     rmanager.cpp
+    physics.cpp
     )
 
 add_library(MyEngine ${ENGINE_SRCS})

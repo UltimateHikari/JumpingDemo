@@ -2,6 +2,7 @@
 
 const std::string SHADER_PATH = "../shaders/";
 const std::string MODEL_PATH = "../resources/";
+const std::string SKYBOX_PATH = "../resources/skybox/";
 
 using namespace glm;
 
@@ -25,6 +26,10 @@ std::shared_ptr<Model> ResourceManager :: getModel(GLuint modelID) const
 std::shared_ptr<Light> ResourceManager :: getLight(GLuint lightID) const
 {
     return lights[lightID];
+}
+
+std::shared_ptr<Skybox> ResourceManager :: getSkybox() const{
+    return skybox;
 }
 
 GLuint ResourceManager :: getShadersAmount() const{
@@ -71,4 +76,52 @@ void ResourceManager :: loadResources(const std::string& config_file_path)
             std::shared_ptr<Light>(new DefaultLamp(vec3(x,y,z)))
         );
     }
+    //skyboxload
+    std::vector<std::string> faces(6);
+    for(int i = 0; i < 6; ++i){
+        fin >> faces[i];
+    }
+    GLuint SkyboxTexture;
+    glGenTextures(1, &SkyboxTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, SkyboxTexture);
+ 
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load((SKYBOX_PATH + faces[i]).c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cerr << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    fin.close();
+    std::cerr << "Skybox texture loaded\n";
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    std::ifstream fsk(SKYBOX_PATH + "skybox.obj");
+    if(!fsk.is_open()){
+        std::cerr << "error opening skyboxobj\n";
+        return;
+    }
+
+    std::vector<float> vertices(36*3);
+    for(int i = 0; i < 36*3; ++i){
+        fsk >> vertices[i];
+    }
+    skybox = std::make_shared<Skybox>(vertices, shaders[2], SkyboxTexture);
+    std::cerr << shaders[1].getType().size() << std::endl;
+    std::cerr << "\nSkybox created\n" << vertices.size() << "\n";
+    fsk.close();
 }

@@ -93,7 +93,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
             vec3(0.0f,2.0f,0.0f),
             vec3(0.1f,1.0f,0.0f),
             4.0f, 2.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,new PlayerControlledObject(vec3(0.0f,1.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new PlayerControlledObject(vec3(0.0f,2.0f,0.0f))));
     world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
@@ -136,15 +136,16 @@ void Game :: update(){
      * 'cause it wants fixed time intervals for updates 
      */
     cameras[current_camera_index]->computeMatricesFromInputs(window.getWindow(), deltaTime);
+    //std::cerr << "placing in shaders: " << ResourceManager::instance().getShadersAmount() << '\n';
     for(int i = 0; i < ResourceManager::instance().getShadersAmount(); ++i){
         Shader& shader = ResourceManager::instance().getShader(i);
         shader.use();
         shader.setMat4("projection", cameras[current_camera_index]->getProjectionMatrix());
         shader.setMat4("view", cameras[current_camera_index]->getViewMatrix());
-        if(shader.getType() == "material")
+        if(shader.getType() == "material"){
             shader.setVec3("viewPosition", cameras[current_camera_index]->getPosition());
+        }
     }
-
     world.update(deltaTime);
 
     lastTime = currentTime;
@@ -153,4 +154,5 @@ void Game :: update(){
 void Game :: render(){
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     world.render();
+    ResourceManager::instance().getSkybox()->Draw();
 }

@@ -17,6 +17,7 @@ private:
     std::vector< std::shared_ptr<Model> > models;
     std::vector< std::shared_ptr<Light> > lights;
     std::vector< Shader > shaders;
+    std::shared_ptr<Skybox> skybox;
     static ResourceManager* instance_;
 public:
     ResourceManager();
@@ -25,6 +26,7 @@ public:
     void loadResources(const std::string& config_file_path);
     std::shared_ptr<Model> getModel(GLuint modelID) const;
     std::shared_ptr<Light> getLight(GLuint lightID) const;
+    std::shared_ptr<Skybox> getSkybox() const;
     GLuint getShadersAmount() const;
     GLuint getLightsAmount() const;
     Shader& getShader(GLuint shaderID);

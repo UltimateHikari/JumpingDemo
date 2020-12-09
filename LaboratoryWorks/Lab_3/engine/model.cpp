@@ -16,6 +16,36 @@ Mesh :: Mesh(
    prepareMesh(); 
 }
 
+Skybox :: Skybox(
+        vector<float> vertices_, Shader& shader_, GLuint skyboxTexture_
+    ): shader(shader_), skyboxTexture(skyboxTexture_){
+    vertices = std::move(vertices_);
+    prepareSkybox();
+}
+
+void Skybox :: prepareSkybox(){
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindVertexArray(0);
+}
+
+void Skybox :: Draw(){
+    glDepthFunc(GL_LEQUAL);
+    shader.use();
+    glBindVertexArray(VAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDepthFunc(GL_LESS);
+    glBindVertexArray(0);
+}
+
 void Mesh :: prepareMesh(){
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -131,7 +161,7 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
     }
     // materials
     if(mesh->mMaterialIndex >= 0){
-        std::cerr << "Loading textures..\n";
+        //std::cerr << "Loading textures..\n";
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];    
 
         vector<Texture> diffuseMaps = TextureManager::getInstance().loadMaterials(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
@@ -140,7 +170,7 @@ Mesh Model :: processMesh(aiMesh *mesh, const aiScene *scene){
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
-    std::cerr << "Mesh loaded: " << vertices.size() << " vertices, " << indices.size() << " indices & " << textures.size() << " textures\n";
+    //std::cerr << "Mesh loaded: " << vertices.size() << " vertices, " << indices.size() << " indices & " << textures.size() << " textures\n";
 
     return Mesh(vertices, indices, textures);
 }

@@ -13,6 +13,7 @@ public:
     GLuint getBoundLights();
     void BindLight();
     void finalizeLight();
+    void resetLight();
     std::string& getType(){return type;}
     void setBool(const std::string &name, bool value) const;  
     void setInt(const std::string &name, int value) const;   

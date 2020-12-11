@@ -121,7 +121,5 @@ void ResourceManager :: loadResources(const std::string& config_file_path)
         fsk >> vertices[i];
     }
     skybox = std::make_shared<Skybox>(vertices, shaders[2], SkyboxTexture);
-    std::cerr << shaders[1].getType().size() << std::endl;
-    std::cerr << "\nSkybox created\n" << vertices.size() << "\n";
     fsk.close();
 }

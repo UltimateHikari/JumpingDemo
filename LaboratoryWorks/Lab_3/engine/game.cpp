@@ -94,7 +94,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
             vec3(0.1f,1.0f,0.0f),
             4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(0,0,1,new PlayerControlledObject(vec3(0.0f,2.0f,0.0f))));
-    world.addEntity(std::make_shared<Entity>(1,0,40, vec3()));
+    world.addEntity(std::make_shared<Entity>(1,0,20, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
     world.prerender();
@@ -144,6 +144,9 @@ void Game :: update(){
         shader.setMat4("view", cameras[current_camera_index]->getViewMatrix());
         if(shader.getType() == "material"){
             shader.setVec3("viewPosition", cameras[current_camera_index]->getPosition());
+        }
+        if(shader.getType() == "cubemap"){
+            shader.setMat4("view", mat4(mat3(cameras[current_camera_index]->getViewMatrix())));
         }
     }
     world.update(deltaTime);

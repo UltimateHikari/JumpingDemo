@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "gl_includes.hpp"
 
 class Shader{
 private:

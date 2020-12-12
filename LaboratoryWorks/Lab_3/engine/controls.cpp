@@ -1,6 +1,3 @@
-// Include GLFW
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
@@ -70,16 +67,16 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window, float deltaTime
 	
 	up = glm::cross( right, direction );
 
-	if (move_flags[0])
-		position += direction * deltaTime * speed;
-	if (move_flags[1])
-		position -= direction * deltaTime * speed;
-	if (move_flags[2])
-		position += right * deltaTime * speed;
-	if (move_flags[3])
-		position -= right * deltaTime * speed;
+	// if (move_flags[0])
+	// 	position += direction * deltaTime * speed;
+	// if (move_flags[1])
+	// 	position -= direction * deltaTime * speed;
+	// if (move_flags[2])
+	// 	position += right * deltaTime * speed;
+	// if (move_flags[3])
+	// 	position -= right * deltaTime * speed;
 
-	move_flags.reset();
+	// move_flags.reset();
 
 	//glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS
 
@@ -87,15 +84,6 @@ void FreeCamera :: computeMatricesFromInputs(GLFWwindow* window, float deltaTime
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
 }
 
-void FreeCamera :: onUp(){
-	move_flags[0] = true;
-}
-void FreeCamera :: onDown(){
-	move_flags[1] = true;
-}
-void FreeCamera :: onRight(){
-	move_flags[2] = true;
-}
-void FreeCamera :: onLeft(){
-	move_flags[3] = true;
+void Player :: update(float deltaTime){
+	float horizontalAngle = entity->getPhysical().getAngle();
 }

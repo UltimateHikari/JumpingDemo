@@ -5,37 +5,6 @@
 
 using namespace glm;
 
-Entity :: Entity(
-    GLuint model_id,
-    GLuint shader_id,
-    float scale_,
-    PhysicalObject * object_
-):  object(std::unique_ptr<PhysicalObject>(object_)), 
-    model(ResourceManager::instance().getModel(model_id)),
-    shader(ResourceManager::instance().getShader(shader_id)),
-    scale_arg(scale_){}
-
-Entity :: Entity(
-        GLuint model_id,
-        GLuint shader_id,
-        float scale_,
-        vec3 position
-    ): Entity(model_id, shader_id, scale_, new StaticObject(position)){}
-
-void Entity :: update(float deltaTime){
-    object->update(deltaTime);
-}
-
-void Entity :: render(){
-    shader.use();
-    //shader.setMat4("model", mat4(1.0f));
-    shader.setMat4("model", 
-			translate(mat4(1.0f), object->getPosition())
-            *rotate(mat4(1.0f), object->getAngle(), object->getAxis())
-			*scale(mat4(1.0f), vec3(scale_arg)));
-    model->Draw(shader);
-}
-
 void World :: update(float deltaTime){
     for(int i = 0; i < entities.size(); ++i){
         entities[i]->update(deltaTime);
@@ -85,47 +54,47 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
-            vec3(-4.0f,2.0f,-4.0f),
-            vec3(1.0f,0.0f,0.0f),
-            4.0f, 2.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
-            vec3(0.0f,2.0f,0.0f),
-            vec3(0.1f,1.0f,0.0f),
-            4.0f, 2.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,new PlayerControlledObject(vec3(0.0f,2.0f,0.0f))));
+    // world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
+    //         vec3(-4.0f,2.0f,-4.0f),
+    //         vec3(1.0f,0.0f,0.0f),
+    //         4.0f, 2.0f)));
+    // world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
+    //         vec3(0.0f,2.0f,0.0f),
+    //         vec3(0.1f,1.0f,0.0f),
+    //         4.0f, 2.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(vec3(0.0f,2.0f,0.0f))));
     world.addEntity(std::make_shared<Entity>(1,0,20, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
     world.prerender();
 }
 
-void Game :: use_events(){
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
-        world.getPlayerEntity(2)->onForward();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_S ) == GLFW_PRESS){
-        world.getPlayerEntity(2)->onBack();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_D ) == GLFW_PRESS){
-        world.getPlayerEntity(2)->onRight();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
-        world.getPlayerEntity(2)->onLeft();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_UP ) == GLFW_PRESS){
-        cameras[current_camera_index]->onUp();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_DOWN ) == GLFW_PRESS){
-        cameras[current_camera_index]->onDown();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_RIGHT ) == GLFW_PRESS){
-        cameras[current_camera_index]->onRight();
-    }
-    if(glfwGetKey( window.getWindow(), GLFW_KEY_LEFT ) == GLFW_PRESS){
-        cameras[current_camera_index]->onLeft();
-    }
-}
+// void Game :: use_events(){
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
+//         world.getPlayerEntity(2)->onForward();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_S ) == GLFW_PRESS){
+//         world.getPlayerEntity(2)->onBack();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_D ) == GLFW_PRESS){
+//         world.getPlayerEntity(2)->onRight();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
+//         world.getPlayerEntity(2)->onLeft();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_UP ) == GLFW_PRESS){
+//         cameras[current_camera_index]->onUp();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_DOWN ) == GLFW_PRESS){
+//         cameras[current_camera_index]->onDown();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_RIGHT ) == GLFW_PRESS){
+//         cameras[current_camera_index]->onRight();
+//     }
+//     if(glfwGetKey( window.getWindow(), GLFW_KEY_LEFT ) == GLFW_PRESS){
+//         cameras[current_camera_index]->onLeft();
+//     }
+// }
 
 void Game :: update(){
     static double lastTime = glfwGetTime();
@@ -136,7 +105,6 @@ void Game :: update(){
      * 'cause it wants fixed time intervals for updates 
      */
     cameras[current_camera_index]->computeMatricesFromInputs(window.getWindow(), deltaTime);
-    //std::cerr << "placing in shaders: " << ResourceManager::instance().getShadersAmount() << '\n';
     for(int i = 0; i < ResourceManager::instance().getShadersAmount(); ++i){
         Shader& shader = ResourceManager::instance().getShader(i);
         shader.use();

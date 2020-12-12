@@ -9,9 +9,6 @@ using namespace std;
 
 #include <string.h>
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-
 #include "shader.hpp"
 
 Shader :: Shader(const char * vertex_file_path,const char * fragment_file_path, std::string& type_): boundLights(0){

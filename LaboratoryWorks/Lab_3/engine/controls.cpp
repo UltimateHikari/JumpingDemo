@@ -75,10 +75,10 @@ float norm(float a){
 
 TrackingCamera::TrackingCamera() :
 	objectPosition(vec3(0,0,0)),
-	horizontalAngle(0.2f),
-	verticalAngle(0.2f),
+	horizontalAngle(0.0f),
+	verticalAngle(0.5f),
 	FoV(60.0f),
-	distance(6.0f)
+	distance(10.0f)
 	{};
 
 TrackingCamera::TrackingCamera(
@@ -100,7 +100,7 @@ mat4 TrackingCamera :: getProjectionMatrix() const{
 }
 
 void TrackingCamera :: setAngles(float horizontal, float vertical){
-	horizontalAngle = norm(horizontal);
+	horizontalAngle = norm(horizontal + 3.14);
 	verticalAngle = norm(vertical);
 }
 
@@ -116,20 +116,26 @@ void TrackingCamera :: computeMatrices(float deltaTime){
 	direction = vec3(
 		cos(verticalAngle) * cos(horizontalAngle), 
 		sin(verticalAngle),
-		cos(verticalAngle) * sin(horizontalAngle)
+		(-1.0f)*cos(verticalAngle) * sin(horizontalAngle)
 	)*distance;
 	// Right vector - const `cause no roll
 	vec3 right = vec3(
 		cos(horizontalAngle - 3.14f/2.0f), 
 		0,
-		sin(horizontalAngle - 3.14f/2.0f)
+		(-1.0f)*sin(horizontalAngle - 3.14f/2.0f)
 	);
-	up = glm::cross( right, direction );
+	up = glm::cross(right, direction);
+	//up = glm::cross(direction, right);
 	//std::cerr << to_string(direction) << std::endl;
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
 }
 
 void Player :: update(Window& window, float deltaTime){
+	if(glfwGetKey( window.getWindow(), GLFW_KEY_C ) == GLFW_PRESS){
+        isActive = true;
+		std::cerr << "acrtivated" << std::endl;
+    }
+	if(!isActive) return;
 	float horizontalAngle = entity->getPhysical().getAngle();
 	//int w_height, w_width; //TODO: Implement Window wrapper
 	//glfwGetWindowSize(window, w_width, w_height)
@@ -148,7 +154,11 @@ void Player :: update(Window& window, float deltaTime){
 	entity->getPhysical().doTurn(horizontalAngleDelta);
 
 	//move object and notify camera
-	vec3 direction = rotateY(vec3(1.0,0.0,0.0), horizontalAngle);
+	vec3 direction = vec3(
+		cos(horizontalAngle),
+		0.0f,
+		(-1.0f)*sin(horizontalAngle)
+	);
 	vec3 velocity = vec3(0.0);
 	vec3 right = cross(vec3(0.0,1.0,0.0), direction);
     if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){

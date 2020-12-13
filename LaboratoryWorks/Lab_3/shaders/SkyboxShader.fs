@@ -7,5 +7,5 @@ uniform samplerCube skybox;
  
 void main()
 {    
-    FragColor = texture(skybox, TexCoords);
+    FragColor = 0.5*texture(skybox, TexCoords); //spooky darkey day
 }

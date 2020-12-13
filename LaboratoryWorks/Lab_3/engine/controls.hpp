@@ -79,6 +79,7 @@ private:
     float speed;
     float angleSpeed;
     float verticalAngle;
+    bool isActive;
 public:
     Player(
         TrackingCamera* camera_,
@@ -87,7 +88,8 @@ public:
             entity(entity_),
             speed(3.0f),
             angleSpeed(0.005f),
-            verticalAngle(0.0f)
+            verticalAngle(0.0f),
+            isActive(false)
         {
         }
     void update(Window& window, float deltaTime);

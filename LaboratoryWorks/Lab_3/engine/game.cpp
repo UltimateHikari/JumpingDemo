@@ -41,7 +41,6 @@ std::shared_ptr<Entity> World :: getPlayerEntity(GLuint index){
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     ResourceManager::instance().loadResources("../resource_config");
-    cameras.push_back(std::unique_ptr<CameraEntity>(new FreeCamera));
     //well, depth-test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -66,35 +65,10 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     world.addEntity(std::make_shared<Entity>(1,0,20, vec3()));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
+    cameras.push_back(std::unique_ptr<CameraEntity>(new TrackingCamera));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(new Player(static_cast<TrackingCamera*>(cameras[0].get()), world.getPlayerEntity(0))));
     world.prerender();
 }
-
-// void Game :: use_events(){
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
-//         world.getPlayerEntity(2)->onForward();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_S ) == GLFW_PRESS){
-//         world.getPlayerEntity(2)->onBack();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_D ) == GLFW_PRESS){
-//         world.getPlayerEntity(2)->onRight();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
-//         world.getPlayerEntity(2)->onLeft();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_UP ) == GLFW_PRESS){
-//         cameras[current_camera_index]->onUp();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_DOWN ) == GLFW_PRESS){
-//         cameras[current_camera_index]->onDown();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_RIGHT ) == GLFW_PRESS){
-//         cameras[current_camera_index]->onRight();
-//     }
-//     if(glfwGetKey( window.getWindow(), GLFW_KEY_LEFT ) == GLFW_PRESS){
-//         cameras[current_camera_index]->onLeft();
-//     }
-// }
 
 void Game :: update(){
     static double lastTime = glfwGetTime();
@@ -104,7 +78,10 @@ void Game :: update(){
      * here should be some accumulator stuff for reactphysics3d?
      * 'cause it wants fixed time intervals for updates 
      */
-    cameras[current_camera_index]->computeMatricesFromInputs(window.getWindow(), deltaTime);
+    for(int i = 0; i < controllers.size(); ++i){
+        controllers[i]->update(window,deltaTime);
+    }
+    cameras[current_camera_index]->computeMatrices(deltaTime);
     for(int i = 0; i < ResourceManager::instance().getShadersAmount(); ++i){
         Shader& shader = ResourceManager::instance().getShader(i);
         shader.use();

@@ -23,6 +23,8 @@ public:
     const glm::vec3& getPosition() const;
     const glm::vec3& getAxis() const;
     float getAngle() const;
+    virtual void doTurn(float angle_){};
+    virtual void doMove(glm::vec3& velocity_){}
     virtual void update(float deltaTime) = 0;
 };
 

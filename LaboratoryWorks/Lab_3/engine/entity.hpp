@@ -36,7 +36,7 @@ public:
     virtual ~Entity() = default;
     virtual void render();
     void update(float deltaTime);
-    const PhysicalObject& getPhysical(){return *object;}
+    PhysicalObject& getPhysical(){return *object;}
 };
 
 // class LightEntity: public Entity{ //for future moving light-entities;

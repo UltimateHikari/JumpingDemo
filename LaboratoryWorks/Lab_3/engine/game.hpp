@@ -33,7 +33,8 @@ public:
 
 class Game{
 private:
-    std::vector<std::unique_ptr<CameraEntity> > cameras;
+    std::vector<std::unique_ptr<CameraEntity>> cameras;
+    std::vector<std::unique_ptr<ControllerInterface> > controllers;
     World world;
     Window& window;
     GLuint current_camera_index;

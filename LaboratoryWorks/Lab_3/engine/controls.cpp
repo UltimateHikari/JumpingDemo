@@ -125,17 +125,16 @@ void TrackingCamera :: computeMatrices(float deltaTime){
 		(-1.0f)*sin(horizontalAngle - 3.14f/2.0f)
 	);
 	up = glm::cross(right, direction);
-	//up = glm::cross(direction, right);
 	//std::cerr << to_string(direction) << std::endl;
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
 }
 
 void Player :: update(Window& window, float deltaTime){
-	if(glfwGetKey( window.getWindow(), GLFW_KEY_C ) == GLFW_PRESS){
-        isActive = true;
-		std::cerr << "acrtivated" << std::endl;
-    }
-	if(!isActive) return;
+	// if(glfwGetKey( window.getWindow(), GLFW_KEY_C ) == GLFW_PRESS){
+    //     isActive = true;
+	// 	std::cerr << "acrtivated" << std::endl;
+    // }
+	// if(!isActive) return; //for debugging. press any key to start :)
 	float horizontalAngle = entity->getPhysical().getAngle();
 	//int w_height, w_width; //TODO: Implement Window wrapper
 	//glfwGetWindowSize(window, w_width, w_height)
@@ -160,7 +159,7 @@ void Player :: update(Window& window, float deltaTime){
 		(-1.0f)*sin(horizontalAngle)
 	);
 	vec3 velocity = vec3(0.0);
-	vec3 right = cross(vec3(0.0,1.0,0.0), direction);
+	vec3 right = cross(direction, vec3(0.0,1.0,0.0));
     if(glfwGetKey( window.getWindow(), GLFW_KEY_W ) == GLFW_PRESS){
         velocity += direction * deltaTime * speed;
     }
@@ -173,6 +172,10 @@ void Player :: update(Window& window, float deltaTime){
     if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
        velocity -= right * deltaTime * speed;
     }
+	if(glfwGetKey( window.getWindow(), GLFW_KEY_SPACE ) == GLFW_PRESS){
+       velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+    }
+	//std::cerr << to_string(velocity) << std::endl;
 	entity->getPhysical().doMove(velocity);
 	camera->setPosition(entity->getPhysical().getPosition()); //delayed move
 }

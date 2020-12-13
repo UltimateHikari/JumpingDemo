@@ -6,6 +6,7 @@
 
 class PhysicalObject{
 private:
+    float gravitation; //velocity down
     glm::vec3 position;
     glm::vec3 axis;
     float angle;
@@ -14,7 +15,8 @@ protected:
     void setAngle(float angle_);
     void setAxis(glm::vec3& axis_);
 public:
-    PhysicalObject(): 
+    PhysicalObject():
+        gravitation(0.0f), 
         position(glm::vec3(0.0f)),
         axis(glm::vec3(0.0f,1.0f,0.0f)), 
         angle(0.0)
@@ -26,6 +28,7 @@ public:
     virtual void doTurn(float angle_){};
     virtual void doMove(glm::vec3& velocity_){}
     virtual void update(float deltaTime) = 0;
+    void applyGravitation();
 };
 
 class StaticObject : public PhysicalObject{

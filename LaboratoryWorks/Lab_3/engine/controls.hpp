@@ -86,10 +86,10 @@ public:
         std::shared_ptr<Entity> entity_
         ):  camera(camera_),
             entity(entity_),
-            speed(3.0f),
-            angleSpeed(0.005f),
+            speed(300.0f),
+            angleSpeed(0.003f),
             verticalAngle(0.0f),
-            isActive(false)
+            isActive(true)
         {
         }
     void update(Window& window, float deltaTime);

@@ -30,6 +30,16 @@ float PhysicalObject :: getAngle() const
     return angle;
 }
 
+void PhysicalObject :: applyGravitation()
+{   
+    gravitation += 0.002f;
+    position.y -= gravitation;
+    if(position.y < 0.0){
+        position.y = 0.0f;
+        gravitation = 0.0f;
+    }
+}
+
 void MovableObject :: doTurn(float angle_)
 {
     deltaAngle = angle_;
@@ -48,4 +58,5 @@ void MovableObject :: update(float deltaTime)
     //mb acceleration after
     velocity = vec3(0.0f);
     deltaAngle = 0.0f;
+    applyGravitation();
 }

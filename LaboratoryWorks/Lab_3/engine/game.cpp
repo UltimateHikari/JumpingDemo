@@ -62,7 +62,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     //         vec3(0.1f,1.0f,0.0f),
     //         4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(vec3(0.0f,2.0f,0.0f))));
-    world.addEntity(std::make_shared<Entity>(1,0,20, vec3()));
+    world.addEntity(std::make_shared<Entity>(1,0,20, vec3(0.0,-1.0,0.0)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
     world.addEntity(std::make_shared<Entity>(0,0,1,new StaticObject(

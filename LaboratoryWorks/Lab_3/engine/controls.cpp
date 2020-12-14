@@ -170,12 +170,40 @@ void Player :: update(Window& window, float deltaTime){
         velocity += right * deltaTime * speed;
     }
     if(glfwGetKey( window.getWindow(), GLFW_KEY_A ) == GLFW_PRESS){
-       velocity -= right * deltaTime * speed;
+        velocity -= right * deltaTime * speed;
     }
+
+	// if(glfwGetKey( window.getWindow(), GLFW_KEY_SPACE ) == GLFW_PRESS){
+	// 	std::cerr << "pressed" << std::endl;
+	// 	if(isInAir){
+	// 		entity->getPhysical().enableGravitation();
+	// 	}else{
+	// 		entity->getPhysical().disableGravitation();
+    //     	velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+	// 	}
+    // }
+
 	if(glfwGetKey( window.getWindow(), GLFW_KEY_SPACE ) == GLFW_PRESS){
-       velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+        velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
     }
 	//std::cerr << to_string(velocity) << std::endl;
 	entity->getPhysical().doMove(velocity);
 	camera->setPosition(entity->getPhysical().getPosition()); //delayed move
+}
+
+void Roamer :: update(Window& window, float deltaTime){
+	if(accumulator < volatility){
+		accumulator += deltaTime*6.0;
+	}else{
+		srand(time(NULL));
+		float angle = ((float)rand() / RAND_MAX - 0.5)*6.28;
+		std::cerr << angle << std::endl;
+		velocity = vec3(
+		cos(angle),
+		0.0f,
+		(-1.0f)*sin(angle)
+		)*speed*deltaTime;
+		accumulator = 0.0f;
+	}
+	entity->getPhysical().doMove(velocity);
 }

@@ -80,17 +80,40 @@ private:
     float angleSpeed;
     float verticalAngle;
     bool isActive;
+    bool isInAir;
 public:
     Player(
         TrackingCamera* camera_,
         std::shared_ptr<Entity> entity_
         ):  camera(camera_),
             entity(entity_),
-            speed(300.0f),
+            speed(400.0f),
             angleSpeed(0.003f),
             verticalAngle(0.0f),
-            isActive(true)
+            isActive(true),
+            isInAir(false)
         {
         }
     void update(Window& window, float deltaTime);
+};
+
+class Roamer : public ControllerInterface{
+private:
+    std::shared_ptr<Entity> entity;
+    glm::vec3 velocity;
+    float accumulator;
+    float volatility;
+    float speed;
+public:
+    Roamer(
+        std::shared_ptr<Entity> entity_,
+        float volatility_
+    ):
+        entity(entity_),
+        velocity(glm::vec3(0.0)),
+        volatility(volatility_),
+        accumulator(0.0f),
+        speed(200.0f)
+        {}
+    void update(Window& window, float deltaTime); 
 };

@@ -1,5 +1,5 @@
 #version 330 core
-#define NUM_POINT_LIGHTS 2
+#define NUM_POINT_LIGHTS 4
 
 out vec4 color;
 in vec3 fNormal;

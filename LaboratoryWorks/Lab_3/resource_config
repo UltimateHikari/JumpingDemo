@@ -1,4 +1,4 @@
-3 4 2
+3 4 4
 MaterialShader material
 LightShader light
 SkyboxShader cubemap
@@ -8,10 +8,9 @@ lamp.obj
 LastCityShell.obj
 4.0 4.0 2.0
 -4.0 6.0 -10.0
+4.0 10.0 -6.0
+-6.0 12.0 8.0
 right.jpg left.jpg top.jpg bottom.jpg front.jpg back.jpg
-
 redeclipse_rt.png  redeclipse_lf.png  redeclipse_up.png  redeclipse_dn.png  redeclipse_ft.png  redeclipse_bk.png
-
-redeclipse_rt.png left.jpg top.jpg bottom.jpg redeclipse_ft.png back.jpg
 
 

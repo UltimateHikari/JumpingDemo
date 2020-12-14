@@ -53,22 +53,43 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
      * manually push spawn some entities?
      * sceneLoader?
      */
-    // world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
-    //         vec3(-4.0f,2.0f,-4.0f),
-    //         vec3(1.0f,0.0f,0.0f),
-    //         4.0f, 2.0f)));
-    // world.addEntity(std::make_shared<Entity>(0,0,1,new CirculatingObject(
-    //         vec3(0.0f,2.0f,0.0f),
-    //         vec3(0.1f,1.0f,0.0f),
-    //         4.0f, 2.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(vec3(0.0f,2.0f,0.0f))));
-    world.addEntity(std::make_shared<Entity>(1,0,20, vec3(0.0,-1.0,0.0)));
+    world.addEntity(std::make_shared<Entity>(3,0,20,new MovableObject(vec3(0.0f,2.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(1,0,30, vec3(0.0,-1.0,0.0)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 4.0f, 2.0f)));
     world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-4.0f, 6.0f, -10.0f)));
-    world.addEntity(std::make_shared<Entity>(0,0,1,new StaticObject(
+    world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(4.0f, 10.0f, -6.0f)));
+    world.addEntity(std::make_shared<Entity>(2,1,0.4, vec3(-6.0f, 12.0f, 8.0f)));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(
             vec3(10.0f,1.0f,0.0f))));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(
+            vec3(6.0f,1.0f,6.0f))));
+    world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(
+            vec3(3.0f,1.0f,-7.0f))));
     cameras.push_back(std::unique_ptr<CameraEntity>(new TrackingCamera));
-    controllers.push_back(std::unique_ptr<ControllerInterface>(new Player(static_cast<TrackingCamera*>(cameras[0].get()), world.getPlayerEntity(0))));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new Player(
+                static_cast<TrackingCamera*>(cameras[0].get()),
+                world.getPlayerEntity(0)
+                )
+        ));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new Roamer(
+                world.getPlayerEntity(6),
+                8.0f
+                )
+        ));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new Roamer(
+                world.getPlayerEntity(7),
+                17.0f
+                )
+        ));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new Roamer(
+                world.getPlayerEntity(8),
+                3.0f
+                )
+        ));
     world.prerender();
 }
 

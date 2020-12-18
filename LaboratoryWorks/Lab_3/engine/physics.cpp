@@ -46,9 +46,19 @@ void PhysicalObject :: disableGravitation()
     g = 0.0f;
 }
 
+void PhysicalObject :: softenGravitation()
+{
+    g = 0.2*DEFAULT_G;
+}
+
 void PhysicalObject :: enableGravitation()
 {
-    g = 8.0f;
+    g = DEFAULT_G;
+}
+
+bool PhysicalObject :: isGravitationEnabled(){
+    if(g == DEFAULT_G) return true;
+    return false;
 }
 
 void MovableObject :: doTurn(float angle_)

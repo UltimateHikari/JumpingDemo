@@ -1,8 +1,9 @@
 #pragma once
 #include "gl_includes.hpp"
-
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+
+#define DEFAULT_G 10.0f
 
 class PhysicalObject{
 private:
@@ -17,7 +18,7 @@ protected:
     float getG();
 public:
     PhysicalObject():
-        g(8.0f),  
+        g(DEFAULT_G),  
         position(glm::vec3(0.0f)),
         axis(glm::vec3(0.0f,1.0f,0.0f)), 
         angle(0.0)
@@ -31,6 +32,8 @@ public:
     virtual void update(float deltaTime) = 0;
     void disableGravitation();
     void enableGravitation();
+    void softenGravitation();
+    bool isGravitationEnabled();
 };
 
 class StaticObject : public PhysicalObject{

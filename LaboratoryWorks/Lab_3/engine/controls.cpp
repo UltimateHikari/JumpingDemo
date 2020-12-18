@@ -168,20 +168,49 @@ void Player :: update(Window& window, float deltaTime){
         velocity -= right * deltaTime * speed;
     }
 
+	isInAir = (entity->getPhysical().getPosition().y > 0.0 ? true : false);
+	if(!isInAir) jumpChargesLeft = defaultJumpCharges;
 	if(hadJumped){
-		
-		if(jumpType == Jumps::Double){
+		std::cerr << static_cast<int>(jumpType) << " ";
+		if(!isInAir){
 			std::cerr << "jOmp\n";
 			velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-		}
-		if(jumpType == Jumps::Lift){
-			if(entity->getPhysical().getPosition().y > 0.0){
-				std::cerr << "not brr\n";
-				entity->getPhysical().enableGravitation();
-			}else{
-				std::cerr << "bRrrr\n";
-				velocity += vec3(0.0,2.0,0.0) * deltaTime * speed;
-				entity->getPhysical().disableGravitation();
+		}else{
+			switch (jumpType)
+			{
+			case Jumps::Double:
+				if(jumpChargesLeft > 0){
+					std::cerr << "jOOOmp\n";
+					velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+					jumpChargesLeft--;
+				}
+				break;
+			case Jumps::Lift:
+				if(entity->getPhysical().isGravitationEnabled() && jumpChargesLeft > 0){
+					std::cerr << "bRrrr\n";
+					velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+					entity->getPhysical().disableGravitation();
+					jumpChargesLeft--;
+				}else{
+					std::cerr << "not bRrr\n";
+					entity->getPhysical().enableGravitation();
+				}
+				break;
+			case Jumps::Glide:
+				if(entity->getPhysical().isGravitationEnabled() && jumpChargesLeft > 0){
+					std::cerr << "whOOsh\n";
+					if(jumpChargesLeft == defaultJumpCharges){
+						velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+					}
+					entity->getPhysical().softenGravitation();
+					jumpChargesLeft--;
+				}else{
+					std::cerr << "not whOOsh\n";
+					entity->getPhysical().enableGravitation();
+				}
+				break;
+			default:
+				break;
 			}
 		}
 		hadJumped = false;
@@ -195,7 +224,7 @@ void Player :: receiveCallback(int id){
 	if(static_cast<Callbacks>(id) == Callbacks::Jump)
 		hadJumped = true;
 	if(static_cast<Callbacks>(id) == Callbacks::NextJump)
-		jumpType = static_cast<Jumps>(static_cast<int>(jumpType) + 1 % 3);
+		jumpType = static_cast<Jumps>((static_cast<int>(jumpType) + 1) % JUMP_TYPES_COUNT);
 }
 
 void Roamer :: update(Window& window, float deltaTime){

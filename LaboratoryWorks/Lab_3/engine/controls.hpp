@@ -4,6 +4,7 @@
 #include "window.hpp"
 #include "entity.hpp"
 
+#define JUMP_TYPES_COUNT 3
 
 class CameraEntity{
     public:
@@ -84,7 +85,7 @@ private:
     float angleSpeed;
     float verticalAngle;
     bool isInAir;
-    const int defaultJumpCharges = 0;
+    const int defaultJumpCharges = 2;
     int jumpChargesLeft;
     bool hadJumped;
     Jumps jumpType;

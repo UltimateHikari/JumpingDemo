@@ -169,49 +169,15 @@ void Player :: update(Window& window, float deltaTime){
     }
 
 	isInAir = (entity->getPhysical().getPosition().y > 0.0 ? true : false);
-	if(!isInAir) jumpChargesLeft = defaultJumpCharges;
+	if(!isInAir) jumps[jumpType]->reset();
+	jumps[jumpType]->refresh(&(entity->getPhysical()), deltaTime);
 	if(hadJumped){
-		std::cerr << static_cast<int>(jumpType) << " ";
+		std::cerr << jumpType << " ";
 		if(!isInAir){
 			std::cerr << "jOmp\n";
 			velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
 		}else{
-			switch (jumpType)
-			{
-			case Jumps::Double:
-				if(jumpChargesLeft > 0){
-					std::cerr << "jOOOmp\n";
-					velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-					jumpChargesLeft--;
-				}
-				break;
-			case Jumps::Lift:
-				if(entity->getPhysical().isGravitationEnabled() && jumpChargesLeft > 0){
-					std::cerr << "bRrrr\n";
-					velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-					entity->getPhysical().disableGravitation();
-					jumpChargesLeft--;
-				}else{
-					std::cerr << "not bRrr\n";
-					entity->getPhysical().enableGravitation();
-				}
-				break;
-			case Jumps::Glide:
-				if(entity->getPhysical().isGravitationEnabled() && jumpChargesLeft > 0){
-					std::cerr << "whOOsh\n";
-					if(jumpChargesLeft == defaultJumpCharges){
-						velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-					}
-					entity->getPhysical().softenGravitation();
-					jumpChargesLeft--;
-				}else{
-					std::cerr << "not whOOsh\n";
-					entity->getPhysical().enableGravitation();
-				}
-				break;
-			default:
-				break;
-			}
+			velocity += jumps[jumpType]->jump(&(entity->getPhysical()))*deltaTime*speed;
 		}
 		hadJumped = false;
 	}
@@ -224,7 +190,86 @@ void Player :: receiveCallback(int id){
 	if(static_cast<Callbacks>(id) == Callbacks::Jump)
 		hadJumped = true;
 	if(static_cast<Callbacks>(id) == Callbacks::NextJump)
-		jumpType = static_cast<Jumps>((static_cast<int>(jumpType) + 1) % JUMP_TYPES_COUNT);
+		jumpType = (jumpType + 1) % JUMP_TYPES_COUNT;
+}
+
+glm::vec3 DoubleJump :: jump(PhysicalObject* physical){
+	if(jumpChargesLeft > 0){
+		std::cerr << "jOOOmp\n";
+		jumpChargesLeft--;
+		return vec3(0.0,1.0,0.0);
+	}
+	return vec3(0.0f);
+}
+
+glm::vec3 LiftJump :: jump(PhysicalObject* physical){
+	if(hadJumped){
+		std::cerr << "not bRrr\n";
+		physical->enableGravitation();
+		hadJumped = false;
+	}else{
+		if(jumpChargesLeft > 0){
+			std::cerr << "bRrrr\n";
+			physical->disableGravitation();
+			jumpChargesLeft--;
+			hadJumped = true;
+			return vec3(0.0,1.5,0.0);
+		}
+	}
+	return vec3(0.0f);
+}
+
+glm::vec3 GlideJump :: jump(PhysicalObject* physical){
+	if(hadJumped){
+		std::cerr << "not whOOsh\n";
+		physical->enableGravitation();
+		hadJumped = false;
+	}else{
+		if(jumpChargesLeft > 0){
+			std::cerr << "whOOsh\n";
+			physical->softenGravitation();
+			jumpChargesLeft--;
+			hadJumped = true;
+			return vec3(0.0,1.0,0.0);
+		}
+	}
+	return vec3(0.0f);
+}
+
+void DoubleJump :: reset(){
+	jumpChargesLeft = defaultJumpCharges;
+}
+
+void LiftJump :: reset(){
+	jumpChargesLeft = defaultJumpCharges;
+	liftActiveTime = 0.0f;
+	hadJumped = false;
+}
+void GlideJump :: reset(){
+	jumpChargesLeft = defaultJumpCharges;
+	glideActiveTime = 0.0f;
+	hadJumped= false;
+}
+
+void LiftJump :: refresh(PhysicalObject* physical, float deltaTime){
+	//std::cerr << liftActiveTime << "\n";
+	if(hadJumped){
+		liftActiveTime += deltaTime;
+		if(liftActiveTime > maxLiftTime){
+			physical->enableGravitation();
+			jumpChargesLeft = 0;
+		}
+	}
+}
+
+void GlideJump :: refresh(PhysicalObject* physical, float deltaTime){
+	if(hadJumped){
+		glideActiveTime += deltaTime;
+		if(glideActiveTime > maxGlideTime){
+			physical->enableGravitation();
+			jumpChargesLeft = 0;
+		}
+	}
 }
 
 void Roamer :: update(Window& window, float deltaTime){

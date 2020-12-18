@@ -74,21 +74,71 @@ public:
     virtual void receiveCallback(int id){};
 };
 
-enum class Jumps{ Double, Lift, Glide };
+class JumpTechnique{
+public:
+    virtual ~JumpTechnique() = default;
+    virtual glm::vec3 jump(PhysicalObject* physical) = 0;
+    virtual void reset() = 0;
+    virtual void refresh(PhysicalObject* physical, float deltaTime){} 
+};
+
+class DoubleJump : public JumpTechnique{
+private:
+    const int defaultJumpCharges = 2;
+    int jumpChargesLeft;
+public:
+    DoubleJump(): jumpChargesLeft(defaultJumpCharges){}
+    glm::vec3 jump(PhysicalObject* physical);
+    void reset();
+};
+
+class LiftJump : public JumpTechnique{
+private:
+    const int defaultJumpCharges = 2;
+    int jumpChargesLeft;
+    float liftActiveTime;
+    bool hadJumped;
+    const float maxLiftTime = 0.5f;
+public:
+    LiftJump(): 
+        jumpChargesLeft(defaultJumpCharges), 
+        liftActiveTime(maxLiftTime),
+        hadJumped(false){}
+    glm::vec3 jump(PhysicalObject* physical);
+    void reset();
+    void refresh(PhysicalObject* physical, float deltaTime);
+};
+
+class GlideJump : public JumpTechnique{
+private:
+    const int defaultJumpCharges = 2;
+    int jumpChargesLeft;
+    float glideActiveTime;
+    bool hadJumped;
+    const float maxGlideTime = 1.5f;
+public:
+    GlideJump():
+        jumpChargesLeft(defaultJumpCharges),
+        glideActiveTime(maxGlideTime),
+        hadJumped(false){}
+    glm::vec3 jump(PhysicalObject* physical);
+    void reset();
+    void refresh(PhysicalObject* physical, float deltaTime);
+};
+
 enum class Callbacks{NextJump, Jump};
 
 class Player : public ControllerInterface{
 private:
     TrackingCamera* camera;
     std::shared_ptr<Entity> entity;
+    std::vector<std::unique_ptr<JumpTechnique> >jumps;
     float speed;
     float angleSpeed;
     float verticalAngle;
     bool isInAir;
-    const int defaultJumpCharges = 2;
-    int jumpChargesLeft;
     bool hadJumped;
-    Jumps jumpType;
+    int jumpType;
 public:
     Player(
         TrackingCamera* camera_,
@@ -99,10 +149,12 @@ public:
             angleSpeed(0.003f),
             verticalAngle(0.0f),
             isInAir(false),
-            jumpChargesLeft(defaultJumpCharges),
             hadJumped(false),
-            jumpType(Jumps::Double)
+            jumpType(0)
         {
+            jumps.push_back(std::unique_ptr<JumpTechnique>(new DoubleJump()));
+            jumps.push_back(std::unique_ptr<JumpTechnique>(new LiftJump()));
+            jumps.push_back(std::unique_ptr<JumpTechnique>(new GlideJump()));
         }
     void update(Window& window, float deltaTime);
     void receiveCallback(int id);

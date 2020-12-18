@@ -39,6 +39,11 @@ std::shared_ptr<Entity> World :: getPlayerEntity(GLuint index){
     return entities[index];
 }
 
+void Game :: nextCamera(){
+    std::cerr << "set";
+    current_camera_index = (current_camera_index + 1) % cameras.size();
+}
+
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     ResourceManager::instance().loadResources("../resource_config");
     //well, depth-test
@@ -48,10 +53,9 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
 	glEnable(GL_CULL_FACE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glfwSetCursorPos(window.getWindow(), 1024/2, 768/2); // TODO parameters
-
     /**
      * manually push spawn some entities?
-     * sceneLoader?
+     * sceneLoader? nah, just hardcode stuff)
      */
     world.addEntity(std::make_shared<Entity>(3,0,20,new MovableObject(vec3(0.0f,2.0f,0.0f))));
     world.addEntity(std::make_shared<Entity>(1,0,30, vec3(0.0,-1.0,0.0)));
@@ -90,6 +94,23 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
                 3.0f
                 )
         ));
+
+    glfwSetWindowUserPointer(window.getWindow(), this); //reee evil magic with vacant pointer
+    glfwSetKeyCallback(
+        window.getWindow(), 
+        [](
+            GLFWwindow* window, 
+            int key, int scancode, 
+            int action, int mods
+            )
+            {
+                auto& self = *static_cast<Game*>(glfwGetWindowUserPointer(window));
+                if(key == GLFW_KEY_C && action == GLFW_PRESS) self.nextCamera();
+                if(key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
+                    self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::Jump));
+                if(key == GLFW_KEY_V && action == GLFW_PRESS) 
+                    self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::NextJump));
+            });
     world.prerender();
 }
 

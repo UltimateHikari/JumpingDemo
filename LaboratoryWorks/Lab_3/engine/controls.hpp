@@ -14,32 +14,32 @@ class CameraEntity{
         virtual ~CameraEntity(){};
 };
 
-// class FreeCamera : public CameraEntity{
-//     private:
-//         glm::vec3 position;
-//         glm::vec3 direction;
-//         glm::vec3 up;
-//         float horizontalAngle;
-//         float verticalAngle;
-//         float speed;
-//         float mouseSpeed;
-//         float FoV;
-//     public:
-//         FreeCamera();
-//         ~FreeCamera(){};
-//         FreeCamera(
-//             glm::vec3 position_, 
-//             float hAngle,
-//             float vAngle
-//             );
-//         void computeMatrices(GLFWwindow* window, float deltaTime);
-//         glm::mat4 getViewMatrix() const;
-//         glm::mat4 getProjectionMatrix() const;
-//         glm::vec3 getPosition() const; //canditate to removal
-//         float getVerticalAngle() const{ return verticalAngle;}
-//         void setAngles(float horizontal, float vertical);
-//         void setPosition(glm::vec3 position_);
-// };
+class FreeCamera : public CameraEntity{
+    private:
+        glm::vec3 position;
+        glm::vec3 direction;
+        glm::vec3 up;
+        float horizontalAngle;
+        float verticalAngle;
+        float speed;
+        float mouseSpeed;
+        float FoV;
+    public:
+        FreeCamera();
+        ~FreeCamera(){};
+        FreeCamera(
+            glm::vec3 position_, 
+            float hAngle,
+            float vAngle
+            );
+        void computeMatrices(GLFWwindow* window, float deltaTime);
+        glm::mat4 getViewMatrix() const;
+        glm::mat4 getProjectionMatrix() const;
+        glm::vec3 getPosition() const;
+        float getVerticalAngle() const{ return verticalAngle;}
+        void setAngles(float horizontal, float vertical);
+        void setPosition(glm::vec3 position_);
+};
 
 class TrackingCamera : public CameraEntity{
     private:
@@ -60,7 +60,7 @@ class TrackingCamera : public CameraEntity{
         void computeMatrices(float deltaTime);
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
-        glm::vec3 getPosition() const; //canditate to removal
+        glm::vec3 getPosition() const; 
         float getVerticalAngle() const{ return verticalAngle;}
         void setAngles(float horizontal, float vertical);
         void setPosition(glm::vec3 position_);
@@ -70,7 +70,11 @@ class ControllerInterface{
 public:
     virtual ~ControllerInterface() = default;
     virtual void update(Window& window, float deltaTime) = 0;
+    virtual void receiveCallback(int id){};
 };
+
+enum class Jumps{ Double, Lift, Glide };
+enum class Callbacks{NextJump, Jump};
 
 class Player : public ControllerInterface{
 private:
@@ -79,8 +83,11 @@ private:
     float speed;
     float angleSpeed;
     float verticalAngle;
-    bool isActive;
     bool isInAir;
+    const int defaultJumpCharges = 0;
+    int jumpChargesLeft;
+    bool hadJumped;
+    Jumps jumpType;
 public:
     Player(
         TrackingCamera* camera_,
@@ -90,11 +97,14 @@ public:
             speed(400.0f),
             angleSpeed(0.003f),
             verticalAngle(0.0f),
-            isActive(true),
-            isInAir(false)
+            isInAir(false),
+            jumpChargesLeft(defaultJumpCharges),
+            hadJumped(false),
+            jumpType(Jumps::Double)
         {
         }
     void update(Window& window, float deltaTime);
+    void receiveCallback(int id);
 };
 
 class Roamer : public ControllerInterface{

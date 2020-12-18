@@ -11,66 +11,66 @@ float norm(float a){
 	return fmod(a, 6.28);
 }
 
-// mat4 FreeCamera :: getViewMatrix() const{
-// 	return lookAt(
-// 		position, position+direction, up);
-// }
+mat4 FreeCamera :: getViewMatrix() const{
+	return lookAt(
+		position, position+direction, up);
+}
 
-// mat4 FreeCamera :: getProjectionMatrix() const{
-// 	return perspective(radians(FoV), 
-// 				4.0f / 3.0f, 0.1f, 100.0f);
-// }
+mat4 FreeCamera :: getProjectionMatrix() const{
+	return perspective(radians(FoV), 
+				4.0f / 3.0f, 0.1f, 100.0f);
+}
 
-// vec3 FreeCamera :: getPosition() const{
-// 	return position;
-// }
+vec3 FreeCamera :: getPosition() const{
+	return position;
+}
 
-// FreeCamera::FreeCamera() :
-// 	position(vec3(3,3,3)),
-// 	horizontalAngle(3.80f),
-// 	verticalAngle(-0.2f),
-// 	speed(3.0f),
-// 	mouseSpeed(0.005f),
-// 	FoV(60.0f)
-// 	{};
+FreeCamera::FreeCamera() :
+	position(vec3(3,3,3)),
+	horizontalAngle(3.80f),
+	verticalAngle(-0.2f),
+	speed(3.0f),
+	mouseSpeed(0.005f),
+	FoV(60.0f)
+	{};
 
-// FreeCamera::FreeCamera(
-// 	vec3 position_, 
-// 	float hAngle,
-// 	float vAngle) : FreeCamera{} {
-// 		position = position_;
-// 		horizontalAngle = hAngle;
-// 		verticalAngle = vAngle;
-// 	};
+FreeCamera::FreeCamera(
+	vec3 position_, 
+	float hAngle,
+	float vAngle) : FreeCamera{} {
+		position = position_;
+		horizontalAngle = hAngle;
+		verticalAngle = vAngle;
+	};
 
-// void FreeCamera :: computeMatrices(GLFWwindow* window, float deltaTime){
-// 	// Direction : Spherical coordinates to Cartesian coordinates conversion
-// 	direction = vec3(
-// 		cos(verticalAngle) * sin(horizontalAngle), 
-// 		sin(verticalAngle),
-// 		cos(verticalAngle) * cos(horizontalAngle)
-// 	);
-// 	// Right vector - const `cause no roll
-// 	vec3 right = vec3(
-// 		sin(horizontalAngle - 3.14f/2.0f), 
-// 		0,
-// 		cos(horizontalAngle - 3.14f/2.0f)
-// 	);
+void FreeCamera :: computeMatrices(GLFWwindow* window, float deltaTime){
+	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	direction = vec3(
+		cos(verticalAngle) * sin(horizontalAngle), 
+		sin(verticalAngle),
+		cos(verticalAngle) * cos(horizontalAngle)
+	);
+	// Right vector - const `cause no roll
+	vec3 right = vec3(
+		sin(horizontalAngle - 3.14f/2.0f), 
+		0,
+		cos(horizontalAngle - 3.14f/2.0f)
+	);
 	
-// 	up = glm::cross( right, direction );
+	up = glm::cross( right, direction );
 
-// 	//std::cerr << to_string(direction) << std::endl;
-// 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
-// }
+	//std::cerr << to_string(direction) << std::endl;
+	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
+}
 
-// void FreeCamera :: setAngles(float horizontal, float vertical){
-// 	horizontalAngle = norm(horizontal);
-// 	verticalAngle = norm(vertical);
-// }
+void FreeCamera :: setAngles(float horizontal, float vertical){
+	horizontalAngle = norm(horizontal);
+	verticalAngle = norm(vertical);
+}
 
-// void FreeCamera :: setPosition(vec3 position_){
-// 	position = position_;
-// }
+void FreeCamera :: setPosition(vec3 position_){
+	position = position_;
+}
 
 
 TrackingCamera::TrackingCamera() :
@@ -130,11 +130,6 @@ void TrackingCamera :: computeMatrices(float deltaTime){
 }
 
 void Player :: update(Window& window, float deltaTime){
-	// if(glfwGetKey( window.getWindow(), GLFW_KEY_C ) == GLFW_PRESS){
-    //     isActive = true;
-	// 	std::cerr << "acrtivated" << std::endl;
-    // }
-	// if(!isActive) return; //for debugging. press any key to start :)
 	float horizontalAngle = entity->getPhysical().getAngle();
 	//int w_height, w_width; //TODO: Implement Window wrapper
 	//glfwGetWindowSize(window, w_width, w_height)
@@ -173,22 +168,34 @@ void Player :: update(Window& window, float deltaTime){
         velocity -= right * deltaTime * speed;
     }
 
-	// if(glfwGetKey( window.getWindow(), GLFW_KEY_SPACE ) == GLFW_PRESS){
-	// 	std::cerr << "pressed" << std::endl;
-	// 	if(isInAir){
-	// 		entity->getPhysical().enableGravitation();
-	// 	}else{
-	// 		entity->getPhysical().disableGravitation();
-    //     	velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-	// 	}
-    // }
-
-	if(glfwGetKey( window.getWindow(), GLFW_KEY_SPACE ) == GLFW_PRESS){
-        velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
-    }
+	if(hadJumped){
+		
+		if(jumpType == Jumps::Double){
+			std::cerr << "jOmp\n";
+			velocity += vec3(0.0,1.0,0.0) * deltaTime * speed;
+		}
+		if(jumpType == Jumps::Lift){
+			if(entity->getPhysical().getPosition().y > 0.0){
+				std::cerr << "not brr\n";
+				entity->getPhysical().enableGravitation();
+			}else{
+				std::cerr << "bRrrr\n";
+				velocity += vec3(0.0,2.0,0.0) * deltaTime * speed;
+				entity->getPhysical().disableGravitation();
+			}
+		}
+		hadJumped = false;
+	}
 	//std::cerr << to_string(velocity) << std::endl;
 	entity->getPhysical().doMove(velocity);
 	camera->setPosition(entity->getPhysical().getPosition()); //delayed move
+}
+
+void Player :: receiveCallback(int id){
+	if(static_cast<Callbacks>(id) == Callbacks::Jump)
+		hadJumped = true;
+	if(static_cast<Callbacks>(id) == Callbacks::NextJump)
+		jumpType = static_cast<Jumps>(static_cast<int>(jumpType) + 1 % 3);
 }
 
 void Roamer :: update(Window& window, float deltaTime){
@@ -197,7 +204,7 @@ void Roamer :: update(Window& window, float deltaTime){
 	}else{
 		srand(time(NULL));
 		float angle = ((float)rand() / RAND_MAX - 0.5)*6.28;
-		std::cerr << angle << std::endl;
+		//std::cerr << angle << std::endl;
 		velocity = vec3(
 		cos(angle),
 		0.0f,

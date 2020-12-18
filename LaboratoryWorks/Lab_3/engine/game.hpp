@@ -37,7 +37,8 @@ private:
     std::vector<std::unique_ptr<ControllerInterface> > controllers;
     World world;
     Window& window;
-    GLuint current_camera_index;
+    GLuint current_camera_index = 0;
+    void nextCamera();
 public:
     Game(Window& window_);
     void use_events();

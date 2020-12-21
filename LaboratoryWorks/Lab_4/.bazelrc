@@ -1,1 +1,0 @@
-build --copt='/std:c++17'  --output_filter=DONT_MATCH_ANYTHING

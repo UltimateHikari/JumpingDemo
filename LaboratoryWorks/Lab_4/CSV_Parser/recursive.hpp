@@ -50,7 +50,7 @@ public:
     static void apply(tuple<Args...>& t, vector<string>::iterator& it, CastApplier applier){
         CastIterator< index - 1, СastApplier, Args...>::apply(t, it, applier);   
         //going to the very beginning
-        сastApplier(get<index>(t),it); //and then applying wrappers with an applier)
+        applier(get<index>(t),it); //and then applying wrappers with an applier)
     }
 };
 
@@ -58,19 +58,19 @@ template <class СastApplier, class... Args>
 struct CastIterator<0, СastApplier, Args...>{
 public:
     static void apply(tuple<Args...>& t, vector<string>::iterator& it, CastApplier applier){
-        сastApplier(get<0>(t),it); //get returns a reference
+        applier(get<0>(t),it); //get returns a reference
     }
 };
 
 template <class CastApplier, class... Args>
 void applierConstruction(tuple<Args...>& t, vector<string>::iterator& it, CastApplier applier){
-    const unsigned int index = tuple_size<tuple<Args...> >::value - 1;
-    CastIterator<index, CastApplier, Args... >::apply(t, it, applier);
+    const unsigned int index = tuple_size<tuple<Args...> >::value;
+    CastIterator<index-1, CastApplier, Args... >::apply(t, it, applier);
 }
 
 template<class... Args>
 void typeRestore(vector<string>::iterator& it, tuple<Args...>& t){
-    //cant construct and have a type of applier at the same type
+    //cant construct and pass through template parameters
     //so constructing here
     applierConstruction(t,it, CastApplier());
 }

@@ -1,8 +1,10 @@
 #pragma once
 #include "gl_includes.hpp"
 #include <memory>
+#include <map>
 #include "window.hpp"
 #include "entity.hpp"
+#include <functional>
 
 #define JUMP_TYPES_COUNT 3
 
@@ -72,6 +74,8 @@ public:
     virtual ~ControllerInterface() = default;
     virtual void update(Window& window, float deltaTime) = 0;
     virtual void receiveCallback(int id){};
+    virtual void enable(){};
+    virtual void disable(){};
 };
 
 class JumpTechnique{
@@ -126,6 +130,15 @@ public:
     void refresh(PhysicalObject* physical, float deltaTime);
 };
 
+// class CameraCycler : public ControllerInterface{
+// private:
+//     ControllerInterface* currentHandler;
+// public:
+//     CameraCycler(ControllerInterface* activeHandler):
+//         currentHandler(activeHandler){}
+//     void addCameraController(GLuint id, ControllerInterface* cameraHandler);
+// };
+
 enum class Callbacks{NextJump, Jump};
 
 class Player : public ControllerInterface{
@@ -142,7 +155,8 @@ private:
 public:
     Player(
         TrackingCamera* camera_,
-        std::shared_ptr<Entity> entity_
+        std::shared_ptr<Entity> entity_,
+        std::function<void(int, std::function<void()> ) > addCallback
         ):  camera(camera_),
             entity(entity_),
             speed(400.0f),
@@ -152,6 +166,11 @@ public:
             hadJumped(false),
             jumpType(0)
         {
+            addCallback(GLFW_KEY_SPACE, 
+                std::bind(&Player::receiveCallback, this, static_cast<int>(Callbacks::Jump)));
+            addCallback(GLFW_KEY_V, 
+                std::bind(&Player::receiveCallback, this, static_cast<int>(Callbacks::NextJump)));
+
             jumps.push_back(std::unique_ptr<JumpTechnique>(new DoubleJump()));
             jumps.push_back(std::unique_ptr<JumpTechnique>(new LiftJump()));
             jumps.push_back(std::unique_ptr<JumpTechnique>(new GlideJump()));

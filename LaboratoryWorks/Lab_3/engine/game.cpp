@@ -2,6 +2,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <fstream>
+#include <stdexcept>
+#include <map>
 
 using namespace glm;
 
@@ -39,9 +41,10 @@ std::shared_ptr<Entity> World :: getPlayerEntity(GLuint index){
     return entities[index];
 }
 
-void Game :: nextCamera(){
-    std::cerr << "set";
-    current_camera_index = (current_camera_index + 1) % cameras.size();
+void Game :: useCamera(GLuint id){
+    std::cerr << "using " << id << " camera\n";
+    if(id >= cameras.size()) throw std::logic_error("unexistent camera");
+    current_camera_index = id;
 }
 
 Game :: Game(Window& window_):  current_camera_index(0), window(window_){
@@ -70,10 +73,15 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(
             vec3(3.0f,1.0f,-7.0f))));
     cameras.push_back(std::unique_ptr<CameraEntity>(new TrackingCamera));
+    //cameras.push_back(std::unique_ptr<CameraEntity>(new ))
     controllers.push_back(std::unique_ptr<ControllerInterface>(
         new Player(
                 static_cast<TrackingCamera*>(cameras[0].get()),
-                world.getPlayerEntity(0)
+                world.getPlayerEntity(0),
+                std::bind(
+                    &Game::registerCallback, this, 
+                    std::placeholders::_1, std::placeholders::_2
+                    )
                 )
         ));
     controllers.push_back(std::unique_ptr<ControllerInterface>(
@@ -94,7 +102,11 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
                 3.0f
                 )
         ));
+    setCallbacks();
+    world.prerender();
+}
 
+void Game :: setCallbacks(){
     glfwSetWindowUserPointer(window.getWindow(), this); //reee evil magic with vacant pointer
     glfwSetKeyCallback(
         window.getWindow(), 
@@ -105,14 +117,22 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
             )
             {
                 auto& self = *static_cast<Game*>(glfwGetWindowUserPointer(window));
-                if(key == GLFW_KEY_C && action == GLFW_PRESS) self.nextCamera();
-                if(key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
-                    self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::Jump));
-                if(key == GLFW_KEY_V && action == GLFW_PRESS) 
-                    self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::NextJump));
+                for(auto i:self.callbacks){
+                    if(key == i.first && action == GLFW_PRESS)
+                        i.second();
+                }
+                // //if(key == GLFW_KEY_C && action == GLFW_PRESS) self.nextCamera();
+                // if(key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
+                //     self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::Jump));
+                // if(key == GLFW_KEY_V && action == GLFW_PRESS) 
+                //     self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::NextJump));
             });
-    world.prerender();
 }
+
+void Game :: registerCallback(int keyId, std::function<void()> foo){
+    callbacks[keyId] = foo; //mb an exception for overwrite?
+}
+
 
 void Game :: update(){
     static double lastTime = glfwGetTime();

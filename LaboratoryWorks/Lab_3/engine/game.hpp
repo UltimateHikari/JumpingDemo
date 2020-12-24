@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <bitset>
+#include <functional>
 
 #include "rmanager.hpp"
 #include "model.hpp"
@@ -36,13 +37,16 @@ class Game{
 private:
     std::vector<std::unique_ptr<CameraEntity>> cameras;
     std::vector<std::unique_ptr<ControllerInterface> > controllers;
+    std::map<int, std::function<void()>> callbacks; //id already baked-in;
     World world;
     Window& window;
     GLuint current_camera_index = 0;
-    void nextCamera();
+    void setCallbacks();
 public:
     Game(Window& window_);
+    void registerCallback(int keyId, std::function<void()> foo);
     void use_events();
     void update();
     void render();
+    void useCamera(GLuint id);
 };

@@ -13,11 +13,14 @@ private:
     unsigned int linesInFile = 0;
     //input position indicator for actual start
     unsigned int ipg = 0; 
+    char row_delim;
+    char col_delim;
+    char escape;
 
     void countLines(){
         string dummybuf;
         while(!fin.eof()){
-            this->getline(dummybuf,fin);
+            getline(fin,dummybuf);
             linesInFile++;
             if(linesInFile == skip){
                 ipg = fin.tellg();
@@ -51,14 +54,7 @@ private:
         typeRestore(it, t);
         return t;
     }
-    
-    bool getline(string& strbuf, istream& fin){
-        fin >> strbuf;
-        if(fin.eof()){
-            return true;
-        }
-        return false;
-    }
+
 public:
     class CSVIterator{
     private:
@@ -79,7 +75,7 @@ public:
         {
             ipg = parser.ipg;
             fin.seekg(ipg);
-            parser.getline(strbuf,fin);
+            getline(fin,strbuf);
             ipg = fin.tellg();
         }
         CSVIterator operator ++(){
@@ -87,7 +83,7 @@ public:
             if(parser.linesInFile - parser.skip > index){
                 index++;
                 fin.seekg(ipg);
-                parser.getline(strbuf,fin);
+                getline(fin,strbuf);
                 ipg = fin.tellg();
             }else{
                 //be come.. end

@@ -11,28 +11,23 @@ private:
     istream& fin;
     unsigned int skip;
     unsigned int linesInFile = 0;
-
-    void resetStupidIstream(){
-        //why are you running... 
-        //i mean have copyconstructor deleted
-        fin.seekg(0);
-        string dummybuf;
-        for(unsigned int i = 0; i < skip; ++i){
-            this->getline(dummybuf,fin);
-        }
-    }
+    //input position indicator for actual start
+    unsigned int ipg = 0; 
 
     void countLines(){
         string dummybuf;
         while(!fin.eof()){
             this->getline(dummybuf,fin);
             linesInFile++;
+            if(linesInFile == skip){
+                ipg = fin.tellg();
+            }
         }
         if(skip > linesInFile){
             throw logic_error("skip impossible: file too small");
         }
         cout << "linesInFile: " <<linesInFile << endl;
-        resetStupidIstream();
+        fin.seekg(ipg);
     }
 
     vector<string> parseStrings(string& str){
@@ -64,14 +59,6 @@ private:
         }
         return false;
     }
-    void getlineByIndex(string& strbuf, istream& fin, unsigned int index){
-        resetStupidIstream();
-        for(int i = 0; i < index; ++i){
-            getline(strbuf, fin);
-        }
-        resetStupidIstream();
-
-    }
 public:
     class CSVIterator{
     private:
@@ -80,6 +67,8 @@ public:
         CSVParser& parser;
         int index = 1; //from 1
         bool isEnd;
+        //input position indicator for last read
+        unsigned int ipg = 0;
         
     public:
         CSVIterator(
@@ -88,14 +77,18 @@ public:
             bool isEnd_ = false
         ):parser(parser_), fin(fin_), isEnd(isEnd_)
         {
-            parser.getlineByIndex(strbuf,fin,index);
-
+            ipg = parser.ipg;
+            fin.seekg(ipg);
+            parser.getline(strbuf,fin);
+            ipg = fin.tellg();
         }
         CSVIterator operator ++(){
             if(isEnd) return *this;
             if(parser.linesInFile - parser.skip > index){
                 index++;
-                parser.getlineByIndex(strbuf,fin,index);
+                fin.seekg(ipg);
+                parser.getline(strbuf,fin);
+                ipg = fin.tellg();
             }else{
                 //be come.. end
                 isEnd = true;

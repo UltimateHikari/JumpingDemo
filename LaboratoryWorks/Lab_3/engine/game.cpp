@@ -73,7 +73,7 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
     world.addEntity(std::make_shared<Entity>(0,0,1,new MovableObject(
             vec3(3.0f,1.0f,-7.0f))));
     cameras.push_back(std::unique_ptr<CameraEntity>(new TrackingCamera));
-    //cameras.push_back(std::unique_ptr<CameraEntity>(new ))
+    cameras.push_back(std::unique_ptr<CameraEntity>(new FreeCamera));
     controllers.push_back(std::unique_ptr<ControllerInterface>(
         new Player(
                 static_cast<TrackingCamera*>(cameras[0].get()),
@@ -81,9 +81,29 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
                 std::bind(
                     &Game::registerCallback, this, 
                     std::placeholders::_1, std::placeholders::_2
+                    ),
+                true
+                )
+        ));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new Spectator(
+            static_cast<FreeCamera*>(cameras[0].get())
+        )
+    ));
+    controllers.push_back(std::unique_ptr<ControllerInterface>(
+        new CameraCycler(
+            controllers[0].get(),
+            std::bind(&Game::useCamera, this, 0),
+            std::bind(
+                    &Game::registerCallback, this, 
+                    std::placeholders::_1, std::placeholders::_2
                     )
                 )
         ));
+    dynamic_cast<CameraCycler*>(controllers[2].get())->registerCameraController(
+        std::bind(&Game::useCamera, this, 1),
+        controllers[1].get()
+    );
     controllers.push_back(std::unique_ptr<ControllerInterface>(
         new Roamer(
                 world.getPlayerEntity(6),
@@ -121,11 +141,6 @@ void Game :: setCallbacks(){
                     if(key == i.first && action == GLFW_PRESS)
                         i.second();
                 }
-                // //if(key == GLFW_KEY_C && action == GLFW_PRESS) self.nextCamera();
-                // if(key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
-                //     self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::Jump));
-                // if(key == GLFW_KEY_V && action == GLFW_PRESS) 
-                //     self.controllers[0]->receiveCallback(static_cast<int>(Callbacks::NextJump));
             });
 }
 

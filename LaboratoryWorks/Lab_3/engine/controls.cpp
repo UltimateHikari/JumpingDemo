@@ -43,7 +43,7 @@ FreeCamera::FreeCamera(
 		verticalAngle = vAngle;
 	};
 
-void FreeCamera :: computeMatrices(GLFWwindow* window, float deltaTime){
+void FreeCamera :: computeMatrices(float deltaTime){
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	direction = vec3(
 		cos(verticalAngle) * sin(horizontalAngle), 
@@ -129,7 +129,24 @@ void TrackingCamera :: computeMatrices(float deltaTime){
 	//std::cerr << horizontalAngle << " " << verticalAngle << std::endl;
 }
 
+void CameraCycler :: switchToNextController()
+{
+	handlers[index].second->disable();
+	index++;
+	if(index == handlers.size()) index = 0;
+	handlers[index].second->enable();
+	handlers[index].first(); //activate that camera in-game
+
+}
+void CameraCycler :: registerCameraController(
+        std::function<void() > activateCamera,
+         ControllerInterface* cameraHandler)
+{
+	handlers.push_back(std::make_pair(activateCamera, cameraHandler));
+}
+
 void Player :: update(Window& window, float deltaTime){
+	if(!enabled) return;
 	float horizontalAngle = entity->getPhysical().getAngle();
 	//int w_height, w_width; //TODO: Implement Window wrapper
 	//glfwGetWindowSize(window, w_width, w_height)
@@ -187,6 +204,7 @@ void Player :: update(Window& window, float deltaTime){
 }
 
 void Player :: receiveCallback(int id){
+	if(!enabled) return;
 	if(static_cast<Callbacks>(id) == Callbacks::Jump)
 		hadJumped = true;
 	if(static_cast<Callbacks>(id) == Callbacks::NextJump)

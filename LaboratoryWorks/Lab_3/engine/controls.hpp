@@ -35,7 +35,7 @@ class FreeCamera : public CameraEntity{
             float hAngle,
             float vAngle
             );
-        void computeMatrices(GLFWwindow* window, float deltaTime);
+        void computeMatrices(float deltaTime);
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
         glm::vec3 getPosition() const;
@@ -130,14 +130,25 @@ public:
     void refresh(PhysicalObject* physical, float deltaTime);
 };
 
-// class CameraCycler : public ControllerInterface{
-// private:
-//     ControllerInterface* currentHandler;
-// public:
-//     CameraCycler(ControllerInterface* activeHandler):
-//         currentHandler(activeHandler){}
-//     void addCameraController(GLuint id, ControllerInterface* cameraHandler);
-// };
+class CameraCycler : public ControllerInterface{
+private:
+    std::vector<std::pair<std::function<void()>,ControllerInterface*>> handlers;
+    GLuint index = 0;
+public:
+    CameraCycler(
+        ControllerInterface* activeHandler,
+        std::function<void() > activateCamera,
+        std::function<void(int, std::function<void()> ) > registerCallback
+        ){
+            registerCameraController(activateCamera, activeHandler);
+            registerCallback(GLFW_KEY_C, std::bind(&CameraCycler::switchToNextController, this));
+        }
+    void switchToNextController();
+    void registerCameraController(
+        std::function<void() > activateCamera,
+         ControllerInterface* cameraHandler);
+    void update(Window& window, float deltaTime){}; //muh abstractions
+};
 
 enum class Callbacks{NextJump, Jump};
 
@@ -152,11 +163,13 @@ private:
     bool isInAir;
     bool hadJumped;
     int jumpType;
+    bool enabled;
 public:
     Player(
         TrackingCamera* camera_,
         std::shared_ptr<Entity> entity_,
-        std::function<void(int, std::function<void()> ) > addCallback
+        std::function<void(int, std::function<void()> ) > addCallback,
+        bool enabled_ = false
         ):  camera(camera_),
             entity(entity_),
             speed(400.0f),
@@ -164,7 +177,8 @@ public:
             verticalAngle(0.0f),
             isInAir(false),
             hadJumped(false),
-            jumpType(0)
+            jumpType(0),
+            enabled(enabled_)
         {
             addCallback(GLFW_KEY_SPACE, 
                 std::bind(&Player::receiveCallback, this, static_cast<int>(Callbacks::Jump)));
@@ -177,6 +191,23 @@ public:
         }
     void update(Window& window, float deltaTime);
     void receiveCallback(int id);
+    void enable() { enabled = true; }
+    void disable() { enabled = false; }
+};
+
+class Spectator : public ControllerInterface{
+private:
+    FreeCamera* camera;
+    bool enabled;
+public:
+    Spectator(
+        FreeCamera* camera_,
+        bool enabled_ = false
+    ): camera(camera_), enabled(enabled_){}
+    void update(Window& window, float deltaTime);
+    void receiveCallback(int id);
+    void enable() { enabled = true; }
+    void disable() { enabled = false; }
 };
 
 class Roamer : public ControllerInterface{

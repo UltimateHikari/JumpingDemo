@@ -195,20 +195,20 @@ public:
     void disable() { enabled = false; }
 };
 
-class Spectator : public ControllerInterface{
-private:
-    FreeCamera* camera;
-    bool enabled;
-public:
-    Spectator(
-        FreeCamera* camera_,
-        bool enabled_ = false
-    ): camera(camera_), enabled(enabled_){}
-    void update(Window& window, float deltaTime);
-    void receiveCallback(int id);
-    void enable() { enabled = true; }
-    void disable() { enabled = false; }
-};
+// class Spectator : public ControllerInterface{
+// private:
+//     FreeCamera* camera;
+//     bool enabled;
+// public:
+//     Spectator(
+//         FreeCamera* camera_,
+//         bool enabled_ = false
+//     ): camera(camera_), enabled(enabled_){}
+//     void update(Window& window, float deltaTime);
+//     void receiveCallback(int id){}
+//     void enable() { enabled = true; }
+//     void disable() { enabled = false; }
+// };
 
 class Roamer : public ControllerInterface{
 private:

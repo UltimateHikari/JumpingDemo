@@ -211,6 +211,10 @@ void Player :: receiveCallback(int id){
 		jumpType = (jumpType + 1) % JUMP_TYPES_COUNT;
 }
 
+// void Spectator :: update(Window& window, float deltaTime){
+
+// }
+
 glm::vec3 DoubleJump :: jump(PhysicalObject* physical){
 	if(jumpChargesLeft > 0){
 		std::cerr << "jOOOmp\n";

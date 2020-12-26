@@ -85,11 +85,11 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
                 true
                 )
         ));
-    controllers.push_back(std::unique_ptr<ControllerInterface>(
-        new Spectator(
-            static_cast<FreeCamera*>(cameras[0].get())
-        )
-    ));
+    // controllers.push_back(std::unique_ptr<ControllerInterface>(
+    //     new Spectator(
+    //         static_cast<FreeCamera*>(cameras[0].get())
+    //     )
+    // ));
     controllers.push_back(std::unique_ptr<ControllerInterface>(
         new CameraCycler(
             controllers[0].get(),
@@ -100,10 +100,10 @@ Game :: Game(Window& window_):  current_camera_index(0), window(window_){
                     )
                 )
         ));
-    dynamic_cast<CameraCycler*>(controllers[2].get())->registerCameraController(
-        std::bind(&Game::useCamera, this, 1),
-        controllers[1].get()
-    );
+    // dynamic_cast<CameraCycler*>(controllers[2].get())->registerCameraController(
+    //     std::bind(&Game::useCamera, this, 1),
+    //     controllers[1].get()
+    // );
     controllers.push_back(std::unique_ptr<ControllerInterface>(
         new Roamer(
                 world.getPlayerEntity(6),

@@ -1,7 +1,0 @@
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-git_repository(
-    name = "SDL2",
-    remote = "https://github.com/nikan1234/bazelSDL2_fullpack/",
-    commit = "9c66817c4140cbf68bcc60b9fbb6dcb66bfb615e",
-)

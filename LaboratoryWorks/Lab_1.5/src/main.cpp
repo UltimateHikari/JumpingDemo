@@ -1,8 +1,0 @@
-#include <iostream>
-#include "tritset.h"
-using namespace std;
-
-int main (){
-    cout << "hello world" << endl;
-    return EXIT_SUCCESS;
-}
